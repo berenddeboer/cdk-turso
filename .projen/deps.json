@@ -1,7 +1,11 @@
 {
   "dependencies": [
     {
-      "name": "@stylistic/eslint-plugin",
+      "name": "@aws-sdk/client-ssm",
+      "type": "build"
+    },
+    {
+      "name": "@biomejs/biome",
       "version": "^2",
       "type": "build"
     },
@@ -14,31 +18,12 @@
       "type": "build"
     },
     {
-      "name": "@typescript-eslint/eslint-plugin",
-      "version": "^8",
-      "type": "build"
-    },
-    {
-      "name": "@typescript-eslint/parser",
-      "version": "^8",
-      "type": "build"
-    },
-    {
       "name": "commit-and-tag-version",
       "version": "^12",
       "type": "build"
     },
     {
-      "name": "eslint-import-resolver-typescript",
-      "type": "build"
-    },
-    {
-      "name": "eslint-plugin-import",
-      "type": "build"
-    },
-    {
-      "name": "eslint",
-      "version": "^9",
+      "name": "esbuild",
       "type": "build"
     },
     {
