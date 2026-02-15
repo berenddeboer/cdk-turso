@@ -1,4 +1,4 @@
-import { awscdk, javascript, javascript as js } from "projen"
+import { awscdk, github, javascript, javascript as js } from "projen"
 
 const project = new awscdk.AwsCdkConstructLibrary({
   author: "Berend de Boer",
@@ -13,6 +13,18 @@ const project = new awscdk.AwsCdkConstructLibrary({
   devDeps: ["@aws-sdk/client-ssm", "esbuild", "@biomejs/biome"],
   eslint: false,
   biome: true,
+  workflowNodeVersion: "24.x",
+  releaseToNpm: true,
+  npmAccess: javascript.NpmAccess.PUBLIC,
+  npmProvenance: true,
+  npmTrustedPublishing: true,
+  depsUpgradeOptions: {
+    workflowOptions: {
+      projenCredentials: github.GithubCredentials.fromPersonalAccessToken({
+        secret: "GITHUB_TOKEN",
+      }),
+    },
+  },
   biomeOptions: {
     biomeConfig: {
       formatter: {
