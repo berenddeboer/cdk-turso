@@ -1,9 +1,6 @@
-jest.mock("@aws-sdk/client-ssm", () => {
-  return {
-    SSMClient: jest.fn().mockImplementation(() => ({})),
-    GetParameterCommand: jest.fn().mockImplementation((params) => params),
-  }
-})
+jest.mock("exponential-backoff", () => ({
+  backOff: (fn: () => Promise<unknown>) => fn(),
+}))
 
 const mockSend = jest.fn()
 jest.mock("@aws-sdk/client-ssm", () => {

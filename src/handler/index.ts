@@ -1,7 +1,31 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { GetParameterCommand, SSMClient } from "@aws-sdk/client-ssm"
+import { backOff } from "exponential-backoff"
 
 const ssmClient = new SSMClient({})
+
+const retryOptions = {
+  startingDelay: 5000,
+  timeMultiple: 3,
+  numOfAttempts: 4,
+  jitter: "none" as const,
+}
+
+async function fetchWithRetry(
+  url: string,
+  options: RequestInit,
+  errorMessage: string,
+  allow404: boolean,
+): Promise<Response> {
+  return backOff(async () => {
+    const response = await fetch(url, options)
+    if (!response.ok && !(allow404 && response.status === 404)) {
+      const errorText = await response.text()
+      throw new Error(`${errorMessage}: ${response.status} ${errorText}`)
+    }
+    return response
+  }, retryOptions)
+}
 
 async function getApiToken(parameterName: string): Promise<string> {
   const command = new GetParameterCommand({
@@ -92,7 +116,7 @@ export async function handler(
       body.encryption = ResourceProperties.Encryption
     }
 
-    const response = await fetch(
+    const response = await fetchWithRetry(
       `${baseUrl}/organizations/${orgSlug}/databases`,
       {
         method: "POST",
@@ -102,14 +126,9 @@ export async function handler(
         },
         body: JSON.stringify(body),
       },
+      "Failed to create database",
+      false,
     )
-
-    if (!response.ok) {
-      const errorText = await response.text()
-      throw new Error(
-        `Failed to create database: ${response.status} ${errorText}`,
-      )
-    }
 
     const data = (await response.json()) as TursoDatabaseResponse
     return {
@@ -132,7 +151,7 @@ export async function handler(
         group: ResourceProperties.Group,
       }
 
-      const response = await fetch(
+      const response = await fetchWithRetry(
         `${baseUrl}/organizations/${orgSlug}/databases`,
         {
           method: "POST",
@@ -142,14 +161,9 @@ export async function handler(
           },
           body: JSON.stringify(body),
         },
+        "Failed to create database",
+        false,
       )
-
-      if (!response.ok) {
-        const errorText = await response.text()
-        throw new Error(
-          `Failed to create database: ${response.status} ${errorText}`,
-        )
-      }
 
       const data = (await response.json()) as TursoDatabaseResponse
       return {
@@ -180,7 +194,7 @@ export async function handler(
     }
 
     const dbNameToDelete = encodeURIComponent(PhysicalResourceId)
-    const response = await fetch(
+    await fetchWithRetry(
       `${baseUrl}/organizations/${orgSlug}/databases/${dbNameToDelete}`,
       {
         method: "DELETE",
@@ -188,14 +202,9 @@ export async function handler(
           Authorization: `Bearer ${apiToken}`,
         },
       },
+      "Failed to delete database",
+      true,
     )
-
-    if (!response.ok && response.status !== 404) {
-      const errorText = await response.text()
-      throw new Error(
-        `Failed to delete database: ${response.status} ${errorText}`,
-      )
-    }
 
     return { PhysicalResourceId: PhysicalResourceId }
   }

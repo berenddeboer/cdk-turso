@@ -27,6 +27,10 @@
       "type": "build"
     },
     {
+      "name": "exponential-backoff",
+      "type": "build"
+    },
+    {
       "name": "husky",
       "type": "build"
     },

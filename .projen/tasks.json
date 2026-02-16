@@ -273,13 +273,13 @@
       },
       "steps": [
         {
-          "exec": "npx npm-check-updates@18 --upgrade --target=minor --peer --no-deprecated --dep=dev,peer,prod,optional --filter=@aws-sdk/client-ssm,@types/jest,@types/node,esbuild,husky,jest,jsii-diff,jsii-pacmak,projen,ts-jest,ts-node,typescript"
+          "exec": "npx npm-check-updates@18 --upgrade --target=minor --peer --no-deprecated --dep=dev,peer,prod,optional --filter=@aws-sdk/client-ssm,@types/jest,@types/node,esbuild,exponential-backoff,husky,jest,jsii-diff,jsii-pacmak,projen,ts-jest,ts-node,typescript"
         },
         {
           "exec": "npm install"
         },
         {
-          "exec": "npm update @aws-sdk/client-ssm @biomejs/biome @types/jest @types/node commit-and-tag-version esbuild husky jest jest-junit jsii-diff jsii-docgen jsii-pacmak jsii-rosetta jsii projen ts-jest ts-node typescript aws-cdk-lib constructs"
+          "exec": "npm update @aws-sdk/client-ssm @biomejs/biome @types/jest @types/node commit-and-tag-version esbuild exponential-backoff husky jest jest-junit jsii-diff jsii-docgen jsii-pacmak jsii-rosetta jsii projen ts-jest ts-node typescript aws-cdk-lib constructs"
         },
         {
           "exec": "npx projen"
