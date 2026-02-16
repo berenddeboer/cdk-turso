@@ -1,4 +1,6 @@
 import { awscdk, github, javascript, javascript as js } from "projen"
+import * as fs from "fs"
+import * as path from "path"
 
 const project = new awscdk.AwsCdkConstructLibrary({
   author: "Berend de Boer",
@@ -10,7 +12,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   packageManager: javascript.NodePackageManager.NPM,
   projenrcTs: true,
   repositoryUrl: "https://github.com/berend/cdk-turso.git",
-  devDeps: ["@aws-sdk/client-ssm", "esbuild", "@biomejs/biome"],
+  devDeps: ["@aws-sdk/client-ssm", "esbuild", "@biomejs/biome", "husky"],
   eslint: false,
   biome: true,
   workflowNodeVersion: "24.x",
@@ -70,4 +72,14 @@ const project = new awscdk.AwsCdkConstructLibrary({
 project.projectBuild.compileTask.exec(
   "esbuild src/handler/index.ts --bundle --platform=node --target=node24 --outfile=lib/handler/index.js --external:@aws-sdk/*",
 )
+
+const huskyDir = path.join(project.outdir, ".husky")
+if (!fs.existsSync(huskyDir)) {
+  fs.mkdirSync(huskyDir, { recursive: true })
+}
+fs.writeFileSync(
+  path.join(huskyDir, "pre-commit"),
+  "npx projen test\n",
+)
+
 project.synth()
