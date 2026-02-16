@@ -74,7 +74,7 @@ interface TursoDatabaseEncryption {
 | Attribute | Type | Description |
 |-----------|------|-------------|
 | `dbId` | `string` | Turso database ID |
-| `hostname` | `string` | Database hostname |
+| `hostname` | `string` | DNS hostname (e.g., `my-db-my-org.turso.io`) for libSQL/HTTP connections |
 | `databaseName` | `string` | Database name |
 
 ## Requirements

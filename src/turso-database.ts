@@ -28,6 +28,10 @@ export interface TursoDatabaseProps {
 
 export class TursoDatabase extends Construct {
   public readonly dbId: string
+  /**
+   * DNS hostname for the database (e.g., `my-db-my-org.turso.io`).
+   * Use with libSQL or HTTP connections.
+   */
   public readonly hostname: string
   public readonly databaseName: string
 
