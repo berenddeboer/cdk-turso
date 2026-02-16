@@ -2,7 +2,7 @@
   "name": "cdk-turso",
   "repository": {
     "type": "git",
-    "url": "https://github.com/berend/cdk-turso.git"
+    "url": "https://github.com/berenddeboer/cdk-turso.git"
   },
   "scripts": {
     "biome": "npx projen biome",

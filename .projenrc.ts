@@ -11,7 +11,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   name: "cdk-turso",
   packageManager: javascript.NodePackageManager.NPM,
   projenrcTs: true,
-  repositoryUrl: "https://github.com/berend/cdk-turso.git",
+  repositoryUrl: "https://github.com/berenddeboer/cdk-turso.git",
   devDeps: ["@aws-sdk/client-ssm", "esbuild", "@biomejs/biome", "husky"],
   eslint: false,
   biome: true,
