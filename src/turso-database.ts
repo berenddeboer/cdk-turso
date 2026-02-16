@@ -1,4 +1,4 @@
-import { CustomResource } from "aws-cdk-lib"
+import { CustomResource, Duration } from "aws-cdk-lib"
 import { Code, Function, Runtime, RuntimeFamily } from "aws-cdk-lib/aws-lambda"
 import type { IParameter } from "aws-cdk-lib/aws-ssm"
 import { Provider } from "aws-cdk-lib/custom-resources"
@@ -51,6 +51,7 @@ export class TursoDatabase extends Construct {
       runtime: new Runtime("nodejs24.x", RuntimeFamily.NODEJS),
       handler: "index.handler",
       code: Code.fromAsset(path.join(__dirname, "handler")),
+      timeout: Duration.minutes(3),
       environment: {
         TURSO_API_TOKEN_PARAMETER_NAME: props.apiToken.parameterName,
       },
