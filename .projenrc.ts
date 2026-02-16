@@ -1,6 +1,6 @@
-import { awscdk, github, javascript, javascript as js } from "projen"
 import * as fs from "fs"
 import * as path from "path"
+import { awscdk, github, javascript, javascript as js } from "projen"
 
 const project = new awscdk.AwsCdkConstructLibrary({
   author: "Berend de Boer",
@@ -29,6 +29,9 @@ const project = new awscdk.AwsCdkConstructLibrary({
   },
   biomeOptions: {
     biomeConfig: {
+      files: {
+        includes: ["!biome.jsonc"],
+      },
       formatter: {
         indentStyle: js.biome_config.IndentStyle.SPACE,
         indentWidth: 2,
@@ -58,6 +61,11 @@ const project = new awscdk.AwsCdkConstructLibrary({
       },
       overrides: [
         {
+          includes: ["biome.jsonc"],
+          formatter: { enabled: false },
+          linter: { enabled: false },
+        },
+        {
           includes: ["**/*.test.ts"],
           linter: {
             rules: {
@@ -79,7 +87,7 @@ if (!fs.existsSync(huskyDir)) {
 }
 fs.writeFileSync(
   path.join(huskyDir, "pre-commit"),
-  "npx projen test\n",
+  "npx projen biome && npx projen build\n",
 )
 
 project.synth()

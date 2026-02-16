@@ -9,6 +9,7 @@
   "files": {
     "ignoreUnknown": false,
     "includes": [
+      "!biome.jsonc",
       "src/**",
       "test/**",
       ".projenrc.ts",
@@ -68,6 +69,17 @@
     "useIgnoreFile": true
   },
   "overrides": [
+    {
+      "formatter": {
+        "enabled": false
+      },
+      "includes": [
+        "biome.jsonc"
+      ],
+      "linter": {
+        "enabled": false
+      }
+    },
     {
       "includes": [
         "**/*.test.ts"

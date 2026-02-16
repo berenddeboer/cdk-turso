@@ -87,7 +87,7 @@ Any object.
 | <code><a href="#cdk-turso.TursoDatabase.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
 | <code><a href="#cdk-turso.TursoDatabase.property.databaseName">databaseName</a></code> | <code>string</code> | *No description.* |
 | <code><a href="#cdk-turso.TursoDatabase.property.dbId">dbId</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#cdk-turso.TursoDatabase.property.hostname">hostname</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#cdk-turso.TursoDatabase.property.hostname">hostname</a></code> | <code>string</code> | DNS hostname for the database (e.g., `my-db-my-org.turso.io`). Use with libSQL or HTTP connections. |
 
 ---
 
@@ -130,6 +130,8 @@ public readonly hostname: string;
 ```
 
 - *Type:* string
+
+DNS hostname for the database (e.g., `my-db-my-org.turso.io`). Use with libSQL or HTTP connections.
 
 ---
 

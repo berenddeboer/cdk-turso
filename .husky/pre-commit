@@ -1,1 +1,1 @@
-npx projen test
+npx projen biome && npx projen build
