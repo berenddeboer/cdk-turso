@@ -1,3 +1,4 @@
+export { TursoAuthToken, TursoAuthTokenProps } from "./turso-auth-token"
 export {
   TursoDatabase,
   TursoDatabaseEncryption,

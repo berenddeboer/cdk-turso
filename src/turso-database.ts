@@ -34,9 +34,14 @@ export class TursoDatabase extends Construct {
    */
   public readonly hostname: string
   public readonly databaseName: string
+  public readonly organizationSlug: string
+  public readonly apiToken: IParameter
 
   constructor(scope: Construct, id: string, props: TursoDatabaseProps) {
     super(scope, id)
+
+    this.organizationSlug = props.organizationSlug
+    this.apiToken = props.apiToken
 
     if (!/^[a-z0-9-]+$/.test(props.databaseName)) {
       throw new Error(

@@ -86,6 +86,9 @@ const project = new awscdk.AwsCdkConstructLibrary({
 project.projectBuild.compileTask.exec(
   "esbuild src/handler/index.ts --bundle --platform=node --target=node24 --outfile=lib/handler/index.js --external:@aws-sdk/*",
 )
+project.projectBuild.compileTask.exec(
+  "esbuild src/handler-auth-token/index.ts --bundle --platform=node --target=node24 --outfile=lib/handler-auth-token/index.js --external:@aws-sdk/*",
+)
 
 const huskyDir = path.join(project.outdir, ".husky")
 if (!fs.existsSync(huskyDir)) {

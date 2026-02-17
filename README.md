@@ -36,6 +36,24 @@ database.hostname; // Database hostname
 database.databaseName; // Database name
 ```
 
+### Auth Token
+
+Generate a database auth token and store it as a SecureString in SSM Parameter Store:
+
+```typescript
+import { TursoAuthToken } from 'cdk-turso';
+
+const authToken = new TursoAuthToken(stack, 'AuthToken', {
+  database,
+  parameterName: '/turso/db-token',
+  expiration: '2w',          // optional, default: 'never'
+  authorization: 'read-only', // optional, default: 'full-access'
+});
+
+// The SSM parameter name where the JWT is stored
+authToken.parameterName;
+```
+
 ## API
 
 ### TursoDatabaseProps
@@ -76,6 +94,23 @@ interface TursoDatabaseEncryption {
 | `dbId` | `string` | Turso database ID |
 | `hostname` | `string` | DNS hostname (e.g., `my-db-my-org.turso.io`) for libSQL/HTTP connections |
 | `databaseName` | `string` | Database name |
+| `organizationSlug` | `string` | Organization slug |
+| `apiToken` | `ssm.IParameter` | SSM Parameter containing the Turso API token |
+
+### TursoAuthTokenProps
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `database` | `TursoDatabase` | Yes | The Turso database to create an auth token for |
+| `parameterName` | `string` | Yes | SSM parameter name where the generated JWT will be stored as a SecureString |
+| `expiration` | `string` | No | Token expiry (e.g., `'2w'`, `'1d30m'`). Default: `'never'` |
+| `authorization` | `string` | No | `'full-access'` or `'read-only'`. Default: `'full-access'` |
+
+### TursoAuthToken
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| `parameterName` | `string` | The SSM parameter name where the auth token is stored |
 
 ## Requirements
 
