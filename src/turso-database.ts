@@ -84,7 +84,7 @@ export class TursoDatabase extends Construct {
       resourceProps.Encryption = props.encryption
     }
 
-    const cr = new CustomResource(this, "CustomResource", {
+    const cr = new CustomResource(this, "TursoDb", {
       serviceToken: provider.serviceToken,
       properties: resourceProps,
     })

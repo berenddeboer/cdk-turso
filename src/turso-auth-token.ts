@@ -95,7 +95,7 @@ export class TursoAuthToken extends Construct {
       resourceProps.Authorization = props.authorization
     }
 
-    new CustomResource(this, "CustomResource", {
+    new CustomResource(this, "TursoAuthToken", {
       serviceToken: provider.serviceToken,
       properties: resourceProps,
     })
