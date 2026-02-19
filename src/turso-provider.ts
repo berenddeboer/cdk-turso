@@ -1,5 +1,6 @@
 import { Duration } from "aws-cdk-lib"
 import { Code, Function, Runtime, RuntimeFamily } from "aws-cdk-lib/aws-lambda"
+import type { ILogGroup } from "aws-cdk-lib/aws-logs"
 import type { IParameter } from "aws-cdk-lib/aws-ssm"
 import { Provider } from "aws-cdk-lib/custom-resources"
 import { Construct } from "constructs"
@@ -11,6 +12,12 @@ export interface TursoProviderProps {
    * (stored as SecureString).
    */
   readonly apiToken: IParameter
+
+  /**
+   * Optional log group for the Lambda function.
+   * If not provided, a log group will be automatically created.
+   */
+  readonly logGroup?: ILogGroup
 }
 
 /**
@@ -39,6 +46,7 @@ export class TursoProvider extends Construct {
       handler: "index.handler",
       code: Code.fromAsset(path.join(__dirname, "handler")),
       timeout: Duration.minutes(3),
+      logGroup: props.logGroup,
       environment: {
         TURSO_API_TOKEN_PARAMETER_NAME: props.apiToken.parameterName,
       },
@@ -48,6 +56,7 @@ export class TursoProvider extends Construct {
 
     const provider = new Provider(this, "Provider", {
       onEventHandler: this.handler,
+      logGroup: props.logGroup,
     })
 
     this.serviceToken = provider.serviceToken

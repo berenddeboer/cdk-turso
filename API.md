@@ -784,6 +784,7 @@ const tursoProviderProps: TursoProviderProps = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#cdk-turso.TursoProviderProps.property.apiToken">apiToken</a></code> | <code>aws-cdk-lib.aws_ssm.IParameter</code> | SSM parameter that holds the Turso platform API token (stored as SecureString). |
+| <code><a href="#cdk-turso.TursoProviderProps.property.logGroup">logGroup</a></code> | <code>aws-cdk-lib.aws_logs.ILogGroup</code> | Optional log group for the Lambda function. |
 
 ---
 
@@ -796,6 +797,20 @@ public readonly apiToken: IParameter;
 - *Type:* aws-cdk-lib.aws_ssm.IParameter
 
 SSM parameter that holds the Turso platform API token (stored as SecureString).
+
+---
+
+##### `logGroup`<sup>Optional</sup> <a name="logGroup" id="cdk-turso.TursoProviderProps.property.logGroup"></a>
+
+```typescript
+public readonly logGroup: ILogGroup;
+```
+
+- *Type:* aws-cdk-lib.aws_logs.ILogGroup
+
+Optional log group for the Lambda function.
+
+If not provided, a log group will be automatically created.
 
 ---
 
