@@ -5,8 +5,8 @@ import { awscdk, github, javascript, javascript as js } from "projen"
 const project = new awscdk.AwsCdkConstructLibrary({
   author: "Berend de Boer",
   authorAddress: "berend@pobox.com",
-  cdkVersion: "2.238.0",
-  constructsVersion: "10.5.0",
+  cdkVersion: "2.201.0",
+  constructsVersion: "10.3.0",
   defaultReleaseBranch: "main",
   jsiiVersion: "~5.9.0",
   name: "cdk-turso",

@@ -43,7 +43,6 @@ new TursoAuthToken(scope: Construct, id: string, props: TursoAuthTokenProps)
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#cdk-turso.TursoAuthToken.toString">toString</a></code> | Returns a string representation of this construct. |
-| <code><a href="#cdk-turso.TursoAuthToken.with">with</a></code> | Applies one or more mixins to this construct. |
 
 ---
 
@@ -54,27 +53,6 @@ public toString(): string
 ```
 
 Returns a string representation of this construct.
-
-##### `with` <a name="with" id="cdk-turso.TursoAuthToken.with"></a>
-
-```typescript
-public with(mixins: ...IMixin[]): IConstruct
-```
-
-Applies one or more mixins to this construct.
-
-Mixins are applied in order. The list of constructs is captured at the
-start of the call, so constructs added by a mixin will not be visited.
-Use multiple `with()` calls if subsequent mixins should apply to added
-constructs.
-
-###### `mixins`<sup>Required</sup> <a name="mixins" id="cdk-turso.TursoAuthToken.with.parameter.mixins"></a>
-
-- *Type:* ...constructs.IMixin[]
-
-The mixins to apply.
-
----
 
 #### Static Functions <a name="Static Functions" id="Static Functions"></a>
 
@@ -191,7 +169,6 @@ new TursoDatabase(scope: Construct, id: string, props: TursoDatabaseProps)
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#cdk-turso.TursoDatabase.toString">toString</a></code> | Returns a string representation of this construct. |
-| <code><a href="#cdk-turso.TursoDatabase.with">with</a></code> | Applies one or more mixins to this construct. |
 
 ---
 
@@ -202,27 +179,6 @@ public toString(): string
 ```
 
 Returns a string representation of this construct.
-
-##### `with` <a name="with" id="cdk-turso.TursoDatabase.with"></a>
-
-```typescript
-public with(mixins: ...IMixin[]): IConstruct
-```
-
-Applies one or more mixins to this construct.
-
-Mixins are applied in order. The list of constructs is captured at the
-start of the call, so constructs added by a mixin will not be visited.
-Use multiple `with()` calls if subsequent mixins should apply to added
-constructs.
-
-###### `mixins`<sup>Required</sup> <a name="mixins" id="cdk-turso.TursoDatabase.with.parameter.mixins"></a>
-
-- *Type:* ...constructs.IMixin[]
-
-The mixins to apply.
-
----
 
 #### Static Functions <a name="Static Functions" id="Static Functions"></a>
 
@@ -366,7 +322,6 @@ new TursoProvider(scope: Construct, id: string, props: TursoProviderProps)
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#cdk-turso.TursoProvider.toString">toString</a></code> | Returns a string representation of this construct. |
-| <code><a href="#cdk-turso.TursoProvider.with">with</a></code> | Applies one or more mixins to this construct. |
 
 ---
 
@@ -377,27 +332,6 @@ public toString(): string
 ```
 
 Returns a string representation of this construct.
-
-##### `with` <a name="with" id="cdk-turso.TursoProvider.with"></a>
-
-```typescript
-public with(mixins: ...IMixin[]): IConstruct
-```
-
-Applies one or more mixins to this construct.
-
-Mixins are applied in order. The list of constructs is captured at the
-start of the call, so constructs added by a mixin will not be visited.
-Use multiple `with()` calls if subsequent mixins should apply to added
-constructs.
-
-###### `mixins`<sup>Required</sup> <a name="mixins" id="cdk-turso.TursoProvider.with.parameter.mixins"></a>
-
-- *Type:* ...constructs.IMixin[]
-
-The mixins to apply.
-
----
 
 #### Static Functions <a name="Static Functions" id="Static Functions"></a>
 
