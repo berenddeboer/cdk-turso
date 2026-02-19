@@ -1,7 +1,7 @@
 import { Stack } from "aws-cdk-lib"
 import { Match, Template } from "aws-cdk-lib/assertions"
 import { StringParameter } from "aws-cdk-lib/aws-ssm"
-import { TursoDatabase } from "../src"
+import { TursoDatabase, TursoProvider } from "../src"
 
 describe("TursoDatabase", () => {
   function createStack() {
@@ -10,21 +10,23 @@ describe("TursoDatabase", () => {
       parameterName: "/turso/api-token",
       stringValue: "test-token",
     })
-    return { stack, apiToken }
+    const provider = new TursoProvider(stack, "TursoProvider", { apiToken })
+    return { stack, provider }
   }
 
   test("creates custom resource with correct properties", () => {
-    const { stack, apiToken } = createStack()
+    const { stack, provider } = createStack()
     new TursoDatabase(stack, "Database", {
+      provider,
       databaseName: "test-db",
       group: "group1",
       organizationSlug: "myorg",
-      apiToken,
     })
 
     const template = Template.fromStack(stack)
     template.hasResource("AWS::CloudFormation::CustomResource", {
       Properties: {
+        ResourceType: "Database",
         DatabaseName: "test-db",
         Group: "group1",
         OrganizationSlug: "myorg",
@@ -33,12 +35,12 @@ describe("TursoDatabase", () => {
   })
 
   test("lambda function uses nodejs runtime", () => {
-    const { stack, apiToken } = createStack()
+    const { stack, provider } = createStack()
     new TursoDatabase(stack, "Database", {
+      provider,
       databaseName: "test-db",
       group: "group1",
       organizationSlug: "myorg",
-      apiToken,
     })
 
     const template = Template.fromStack(stack)
@@ -49,12 +51,12 @@ describe("TursoDatabase", () => {
   })
 
   test("lambda has SSM parameter name in environment variables", () => {
-    const { stack, apiToken } = createStack()
+    const { stack, provider } = createStack()
     new TursoDatabase(stack, "Database", {
+      provider,
       databaseName: "test-db",
       group: "group1",
       organizationSlug: "myorg",
-      apiToken,
     })
 
     const template = Template.fromStack(stack)
@@ -70,12 +72,12 @@ describe("TursoDatabase", () => {
   })
 
   test("IAM policy grants ssm:GetParameter", () => {
-    const { stack, apiToken } = createStack()
+    const { stack, provider } = createStack()
     new TursoDatabase(stack, "Database", {
+      provider,
       databaseName: "test-db",
       group: "group1",
       organizationSlug: "myorg",
-      apiToken,
     })
 
     const template = Template.fromStack(stack)
@@ -92,12 +94,12 @@ describe("TursoDatabase", () => {
   })
 
   test("optional properties are passed through when provided", () => {
-    const { stack, apiToken } = createStack()
+    const { stack, provider } = createStack()
     new TursoDatabase(stack, "Database", {
+      provider,
       databaseName: "test-db",
       group: "group1",
       organizationSlug: "myorg",
-      apiToken,
       sizeLimit: "256mb",
       seed: {
         type: "schema",
@@ -111,6 +113,7 @@ describe("TursoDatabase", () => {
 
     const template = Template.fromStack(stack)
     template.hasResourceProperties("AWS::CloudFormation::CustomResource", {
+      ResourceType: "Database",
       DatabaseName: "test-db",
       Group: "group1",
       OrganizationSlug: "myorg",
@@ -127,13 +130,13 @@ describe("TursoDatabase", () => {
   })
 
   test("databaseName validation rejects invalid names", () => {
-    const { stack, apiToken } = createStack()
+    const { stack, provider } = createStack()
     expect(() => {
       new TursoDatabase(stack, "Database", {
+        provider,
         databaseName: "Test-DB",
         group: "group1",
         organizationSlug: "myorg",
-        apiToken,
       })
     }).toThrow(
       "databaseName must contain only lowercase letters, numbers, and dashes",
@@ -141,24 +144,24 @@ describe("TursoDatabase", () => {
   })
 
   test("databaseName validation rejects names longer than 64 chars", () => {
-    const { stack, apiToken } = createStack()
+    const { stack, provider } = createStack()
     expect(() => {
       new TursoDatabase(stack, "Database", {
+        provider,
         databaseName: "a".repeat(65),
         group: "group1",
         organizationSlug: "myorg",
-        apiToken,
       })
     }).toThrow("databaseName must be at most 64 characters")
   })
 
   test("construct exposes dbId, hostname, databaseName attributes", () => {
-    const { stack, apiToken } = createStack()
+    const { stack, provider } = createStack()
     const db = new TursoDatabase(stack, "Database", {
+      provider,
       databaseName: "test-db",
       group: "group1",
       organizationSlug: "myorg",
-      apiToken,
     })
 
     expect(db.dbId).toBeDefined()

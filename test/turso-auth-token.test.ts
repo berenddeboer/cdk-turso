@@ -1,7 +1,7 @@
 import { Stack } from "aws-cdk-lib"
 import { Match, Template } from "aws-cdk-lib/assertions"
 import { StringParameter } from "aws-cdk-lib/aws-ssm"
-import { TursoAuthToken, TursoDatabase } from "../src"
+import { TursoAuthToken, TursoProvider } from "../src"
 
 describe("TursoAuthToken", () => {
   function createStack() {
@@ -10,66 +10,33 @@ describe("TursoAuthToken", () => {
       parameterName: "/turso/api-token",
       stringValue: "test-token",
     })
-    const database = new TursoDatabase(stack, "Database", {
-      databaseName: "test-db",
-      group: "group1",
-      organizationSlug: "myorg",
-      apiToken,
-    })
-    return { stack, apiToken, database }
+    const provider = new TursoProvider(stack, "TursoProvider", { apiToken })
+    return { stack, provider }
   }
 
   test("creates custom resource with correct properties", () => {
-    const { stack, database } = createStack()
+    const { stack, provider } = createStack()
     new TursoAuthToken(stack, "AuthToken", {
-      database,
+      provider,
+      databaseName: "test-db",
+      organizationSlug: "myorg",
       parameterName: "/turso/db-token",
     })
 
     const template = Template.fromStack(stack)
     template.hasResourceProperties("AWS::CloudFormation::CustomResource", {
+      ResourceType: "AuthToken",
       OrganizationSlug: "myorg",
       ParameterName: "/turso/db-token",
     })
   })
 
-  test("lambda function uses nodejs runtime", () => {
-    const { stack, database } = createStack()
-    new TursoAuthToken(stack, "AuthToken", {
-      database,
-      parameterName: "/turso/db-token",
-    })
-
-    const template = Template.fromStack(stack)
-    template.hasResourceProperties("AWS::Lambda::Function", {
-      Runtime: "nodejs24.x",
-      Handler: "index.handler",
-    })
-  })
-
-  test("lambda has SSM parameter name in environment variables", () => {
-    const { stack, database } = createStack()
-    new TursoAuthToken(stack, "AuthToken", {
-      database,
-      parameterName: "/turso/db-token",
-    })
-
-    const template = Template.fromStack(stack)
-    template.hasResourceProperties("AWS::Lambda::Function", {
-      Environment: {
-        Variables: {
-          TURSO_API_TOKEN_PARAMETER_NAME: {
-            Ref: "ApiToken07F9A1D2",
-          },
-        },
-      },
-    })
-  })
-
   test("IAM policy grants ssm:GetParameter for API token", () => {
-    const { stack, database } = createStack()
+    const { stack, provider } = createStack()
     new TursoAuthToken(stack, "AuthToken", {
-      database,
+      provider,
+      databaseName: "test-db",
+      organizationSlug: "myorg",
       parameterName: "/turso/db-token",
     })
 
@@ -87,9 +54,11 @@ describe("TursoAuthToken", () => {
   })
 
   test("IAM policy grants ssm:PutParameter and ssm:DeleteParameter for output parameter", () => {
-    const { stack, database } = createStack()
+    const { stack, provider } = createStack()
     new TursoAuthToken(stack, "AuthToken", {
-      database,
+      provider,
+      databaseName: "test-db",
+      organizationSlug: "myorg",
       parameterName: "/turso/db-token",
     })
 
@@ -107,9 +76,11 @@ describe("TursoAuthToken", () => {
   })
 
   test("optional properties are passed through when provided", () => {
-    const { stack, database } = createStack()
+    const { stack, provider } = createStack()
     new TursoAuthToken(stack, "AuthToken", {
-      database,
+      provider,
+      databaseName: "test-db",
+      organizationSlug: "myorg",
       parameterName: "/turso/db-token",
       expiration: "2w",
       authorization: "read-only",
@@ -117,6 +88,7 @@ describe("TursoAuthToken", () => {
 
     const template = Template.fromStack(stack)
     template.hasResourceProperties("AWS::CloudFormation::CustomResource", {
+      ResourceType: "AuthToken",
       ParameterName: "/turso/db-token",
       Expiration: "2w",
       Authorization: "read-only",
@@ -124,10 +96,12 @@ describe("TursoAuthToken", () => {
   })
 
   test("authorization validation rejects invalid values", () => {
-    const { stack, database } = createStack()
+    const { stack, provider } = createStack()
     expect(() => {
       new TursoAuthToken(stack, "AuthToken", {
-        database,
+        provider,
+        databaseName: "test-db",
+        organizationSlug: "myorg",
         parameterName: "/turso/db-token",
         authorization: "invalid",
       })
@@ -135,9 +109,11 @@ describe("TursoAuthToken", () => {
   })
 
   test("construct exposes parameterName", () => {
-    const { stack, database } = createStack()
+    const { stack, provider } = createStack()
     const authToken = new TursoAuthToken(stack, "AuthToken", {
-      database,
+      provider,
+      databaseName: "test-db",
+      organizationSlug: "myorg",
       parameterName: "/turso/db-token",
     })
 

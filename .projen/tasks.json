@@ -102,9 +102,6 @@
         },
         {
           "exec": "esbuild src/handler/index.ts --bundle --platform=node --target=node24 --outfile=lib/handler/index.js --external:@aws-sdk/*"
-        },
-        {
-          "exec": "esbuild src/handler-auth-token/index.ts --bundle --platform=node --target=node24 --outfile=lib/handler-auth-token/index.js --external:@aws-sdk/*"
         }
       ]
     },

@@ -5,3 +5,4 @@ export {
   TursoDatabaseProps,
   TursoDatabaseSeed,
 } from "./turso-database"
+export { TursoProvider, TursoProviderProps } from "./turso-provider"
