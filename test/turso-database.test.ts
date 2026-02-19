@@ -24,7 +24,7 @@ describe("TursoDatabase", () => {
     })
 
     const template = Template.fromStack(stack)
-    template.hasResource("AWS::CloudFormation::CustomResource", {
+    template.hasResource("Custom::TursoDatabase", {
       Properties: {
         ResourceType: "Database",
         DatabaseName: "test-db",
@@ -112,7 +112,7 @@ describe("TursoDatabase", () => {
     })
 
     const template = Template.fromStack(stack)
-    template.hasResourceProperties("AWS::CloudFormation::CustomResource", {
+    template.hasResourceProperties("Custom::TursoDatabase", {
       ResourceType: "Database",
       DatabaseName: "test-db",
       Group: "group1",
