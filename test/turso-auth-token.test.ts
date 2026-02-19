@@ -24,7 +24,7 @@ describe("TursoAuthToken", () => {
     })
 
     const template = Template.fromStack(stack)
-    template.hasResourceProperties("AWS::CloudFormation::CustomResource", {
+    template.hasResourceProperties("Custom::TursoAuthToken", {
       ResourceType: "AuthToken",
       OrganizationSlug: "myorg",
       ParameterName: "/turso/db-token",
@@ -87,7 +87,7 @@ describe("TursoAuthToken", () => {
     })
 
     const template = Template.fromStack(stack)
-    template.hasResourceProperties("AWS::CloudFormation::CustomResource", {
+    template.hasResourceProperties("Custom::TursoAuthToken", {
       ResourceType: "AuthToken",
       ParameterName: "/turso/db-token",
       Expiration: "2w",

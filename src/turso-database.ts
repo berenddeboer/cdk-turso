@@ -63,6 +63,7 @@ export class TursoDatabase extends Construct {
 
     const cr = new CustomResource(this, "TursoDb", {
       serviceToken: props.provider.serviceToken,
+      resourceType: "Custom::TursoDatabase",
       properties: resourceProps,
     })
 

@@ -86,6 +86,7 @@ export class TursoAuthToken extends Construct {
 
     new CustomResource(this, "TursoAuthToken", {
       serviceToken: props.provider.serviceToken,
+      resourceType: "Custom::TursoAuthToken",
       properties: resourceProps,
     })
 
