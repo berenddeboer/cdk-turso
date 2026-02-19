@@ -17,7 +17,7 @@ export interface TursoProviderProps {
    * Optional log group for the Lambda function.
    * If not provided, a log group will be automatically created.
    */
-  readonly logGroup?: ILogGroup
+  readonly logGroup?: ILogGroup | undefined
 }
 
 /**
