@@ -1,5 +1,10 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { GetParameterCommand, SSMClient } from "@aws-sdk/client-ssm"
+import {
+  DeleteParameterCommand,
+  GetParameterCommand,
+  PutParameterCommand,
+  SSMClient,
+} from "@aws-sdk/client-ssm"
 import { backOff } from "exponential-backoff"
 
 const ssmClient = new SSMClient({})
@@ -15,7 +20,7 @@ async function fetchWithRetry(
   url: string,
   options: RequestInit,
   errorMessage: string,
-  allow404: boolean,
+  allow404 = false,
 ): Promise<Response> {
   return backOff(async () => {
     const response = await fetch(url, options)
@@ -39,6 +44,8 @@ async function getApiToken(parameterName: string): Promise<string> {
   return response.Parameter.Value
 }
 
+// Database types and helpers
+
 interface TursoDatabaseResponse {
   database: {
     DbId: string
@@ -47,25 +54,28 @@ interface TursoDatabaseResponse {
   }
 }
 
-export interface CloudFormationCustomResourceEvent {
+interface DatabaseResourceProperties {
+  ServiceToken: string
+  ResourceType: "Database"
+  DatabaseName: string
+  Group: string
+  OrganizationSlug: string
+  SizeLimit?: string
+  Seed?: {
+    type: string
+    name: string
+    timestamp?: string
+  }
+  Encryption?: {
+    encryptionKey: string
+    encryptionCipher: string
+  }
+}
+
+interface DatabaseEvent {
   RequestType: "Create" | "Update" | "Delete"
   PhysicalResourceId?: string
-  ResourceProperties: {
-    ServiceToken: string
-    DatabaseName: string
-    Group: string
-    OrganizationSlug: string
-    SizeLimit?: string
-    Seed?: {
-      type: string
-      name: string
-      timestamp?: string
-    }
-    Encryption?: {
-      encryptionKey: string
-      encryptionCipher: string
-    }
-  }
+  ResourceProperties: DatabaseResourceProperties
   OldResourceProperties?: {
     DatabaseName: string
     Group: string
@@ -73,30 +83,14 @@ export interface CloudFormationCustomResourceEvent {
   }
 }
 
-export async function handler(
-  event: CloudFormationCustomResourceEvent,
+async function handleDatabase(
+  event: DatabaseEvent,
+  apiToken: string,
 ): Promise<{
   PhysicalResourceId: string
-  Data?: {
-    DbId: string
-    Hostname: string
-    Name: string
-  }
+  Data?: { DbId: string; Hostname: string; Name: string }
 }> {
-  const {
-    RequestType,
-    PhysicalResourceId,
-    ResourceProperties,
-    OldResourceProperties,
-  } = event
-  const parameterName = process.env.TURSO_API_TOKEN_PARAMETER_NAME
-  if (!parameterName) {
-    throw new Error(
-      "TURSO_API_TOKEN_PARAMETER_NAME environment variable not set",
-    )
-  }
-
-  const apiToken = await getApiToken(parameterName)
+  const { RequestType, PhysicalResourceId, ResourceProperties } = event
   const orgSlug = encodeURIComponent(ResourceProperties.OrganizationSlug)
   const baseUrl = "https://api.turso.tech/v1"
 
@@ -127,7 +121,6 @@ export async function handler(
         body: JSON.stringify(body),
       },
       "Failed to create database",
-      false,
     )
 
     const data = (await response.json()) as TursoDatabaseResponse
@@ -142,7 +135,7 @@ export async function handler(
   }
 
   if (RequestType === "Update") {
-    const oldDbName = OldResourceProperties?.DatabaseName
+    const oldDbName = event.OldResourceProperties?.DatabaseName
     const newDbName = ResourceProperties.DatabaseName
 
     if (oldDbName && oldDbName !== newDbName) {
@@ -162,7 +155,6 @@ export async function handler(
           body: JSON.stringify(body),
         },
         "Failed to create database",
-        false,
       )
 
       const data = (await response.json()) as TursoDatabaseResponse
@@ -210,4 +202,175 @@ export async function handler(
   }
 
   throw new Error(`Unknown request type: ${RequestType}`)
+}
+
+// Auth token types and helpers
+
+interface TursoAuthTokenResponse {
+  jwt: string
+}
+
+interface AuthTokenResourceProperties {
+  ServiceToken: string
+  ResourceType: "AuthToken"
+  DatabaseName: string
+  OrganizationSlug: string
+  ParameterName: string
+  Expiration?: string
+  Authorization?: string
+}
+
+interface AuthTokenEvent {
+  RequestType: "Create" | "Update" | "Delete"
+  PhysicalResourceId?: string
+  ResourceProperties: AuthTokenResourceProperties
+}
+
+async function createToken(
+  baseUrl: string,
+  orgSlug: string,
+  dbName: string,
+  apiToken: string,
+  expiration: string,
+  authorization: string,
+): Promise<string> {
+  const params = new URLSearchParams()
+  params.set("expiration", expiration)
+  params.set("authorization", authorization)
+
+  const response = await fetchWithRetry(
+    `${baseUrl}/organizations/${orgSlug}/databases/${dbName}/auth/tokens?${params.toString()}`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiToken}`,
+      },
+    },
+    "Failed to create auth token",
+  )
+
+  const data = (await response.json()) as TursoAuthTokenResponse
+  return data.jwt
+}
+
+async function storeToken(parameterName: string, token: string): Promise<void> {
+  const command = new PutParameterCommand({
+    Name: parameterName,
+    Value: token,
+    Type: "SecureString",
+    Overwrite: true,
+  })
+  await ssmClient.send(command)
+}
+
+async function deleteParameter(parameterName: string): Promise<void> {
+  try {
+    const command = new DeleteParameterCommand({
+      Name: parameterName,
+    })
+    await ssmClient.send(command)
+  } catch (error: unknown) {
+    if (error instanceof Error && error.name === "ParameterNotFound") {
+      return
+    }
+    throw error
+  }
+}
+
+async function handleAuthToken(
+  event: AuthTokenEvent,
+  apiToken: string,
+): Promise<{ PhysicalResourceId: string }> {
+  const { RequestType, PhysicalResourceId, ResourceProperties } = event
+  const orgSlug = encodeURIComponent(ResourceProperties.OrganizationSlug)
+  const dbName = encodeURIComponent(ResourceProperties.DatabaseName)
+  const baseUrl = "https://api.turso.tech/v1"
+  const parameterName = ResourceProperties.ParameterName
+  const expiration = ResourceProperties.Expiration || "never"
+  const authorization = ResourceProperties.Authorization || "full-access"
+
+  if (RequestType === "Create") {
+    const jwt = await createToken(
+      baseUrl,
+      orgSlug,
+      dbName,
+      apiToken,
+      expiration,
+      authorization,
+    )
+    await storeToken(parameterName, jwt)
+    return { PhysicalResourceId: parameterName }
+  }
+
+  if (RequestType === "Update") {
+    const jwt = await createToken(
+      baseUrl,
+      orgSlug,
+      dbName,
+      apiToken,
+      expiration,
+      authorization,
+    )
+    await storeToken(parameterName, jwt)
+    return { PhysicalResourceId: parameterName }
+  }
+
+  if (RequestType === "Delete") {
+    if (!PhysicalResourceId) {
+      return { PhysicalResourceId: "unknown" }
+    }
+
+    if (
+      PhysicalResourceId === "unknown" ||
+      PhysicalResourceId.startsWith("failed-")
+    ) {
+      return { PhysicalResourceId }
+    }
+
+    await deleteParameter(PhysicalResourceId)
+    return { PhysicalResourceId }
+  }
+
+  throw new Error(`Unknown request type: ${RequestType}`)
+}
+
+// Main handler — dispatches by ResourceType
+
+export interface CloudFormationCustomResourceEvent {
+  RequestType: "Create" | "Update" | "Delete"
+  PhysicalResourceId?: string
+  ResourceProperties: {
+    ServiceToken: string
+    ResourceType: "Database" | "AuthToken"
+    [key: string]: unknown
+  }
+  OldResourceProperties?: {
+    [key: string]: unknown
+  }
+}
+
+export async function handler(
+  event: CloudFormationCustomResourceEvent,
+): Promise<{
+  PhysicalResourceId: string
+  Data?: Record<string, string>
+}> {
+  const parameterName = process.env.TURSO_API_TOKEN_PARAMETER_NAME
+  if (!parameterName) {
+    throw new Error(
+      "TURSO_API_TOKEN_PARAMETER_NAME environment variable not set",
+    )
+  }
+
+  const apiToken = await getApiToken(parameterName)
+  const resourceType = event.ResourceProperties.ResourceType
+
+  switch (resourceType) {
+    case "Database":
+      return handleDatabase(event as unknown as DatabaseEvent, apiToken)
+    case "AuthToken":
+      return handleAuthToken(event as unknown as AuthTokenEvent, apiToken)
+    default:
+      throw new Error(`Unknown resource type: ${resourceType}`)
+  }
 }

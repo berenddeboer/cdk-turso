@@ -43,6 +43,7 @@ new TursoAuthToken(scope: Construct, id: string, props: TursoAuthTokenProps)
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#cdk-turso.TursoAuthToken.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#cdk-turso.TursoAuthToken.with">with</a></code> | Applies one or more mixins to this construct. |
 
 ---
 
@@ -54,6 +55,27 @@ public toString(): string
 
 Returns a string representation of this construct.
 
+##### `with` <a name="with" id="cdk-turso.TursoAuthToken.with"></a>
+
+```typescript
+public with(mixins: ...IMixin[]): IConstruct
+```
+
+Applies one or more mixins to this construct.
+
+Mixins are applied in order. The list of constructs is captured at the
+start of the call, so constructs added by a mixin will not be visited.
+Use multiple `with()` calls if subsequent mixins should apply to added
+constructs.
+
+###### `mixins`<sup>Required</sup> <a name="mixins" id="cdk-turso.TursoAuthToken.with.parameter.mixins"></a>
+
+- *Type:* ...constructs.IMixin[]
+
+The mixins to apply.
+
+---
+
 #### Static Functions <a name="Static Functions" id="Static Functions"></a>
 
 | **Name** | **Description** |
@@ -62,7 +84,7 @@ Returns a string representation of this construct.
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="cdk-turso.TursoAuthToken.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="cdk-turso.TursoAuthToken.isConstruct"></a>
 
 ```typescript
 import { TursoAuthToken } from 'cdk-turso'
@@ -71,6 +93,20 @@ TursoAuthToken.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="cdk-turso.TursoAuthToken.isConstruct.parameter.x"></a>
 
@@ -155,6 +191,7 @@ new TursoDatabase(scope: Construct, id: string, props: TursoDatabaseProps)
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#cdk-turso.TursoDatabase.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#cdk-turso.TursoDatabase.with">with</a></code> | Applies one or more mixins to this construct. |
 
 ---
 
@@ -166,6 +203,27 @@ public toString(): string
 
 Returns a string representation of this construct.
 
+##### `with` <a name="with" id="cdk-turso.TursoDatabase.with"></a>
+
+```typescript
+public with(mixins: ...IMixin[]): IConstruct
+```
+
+Applies one or more mixins to this construct.
+
+Mixins are applied in order. The list of constructs is captured at the
+start of the call, so constructs added by a mixin will not be visited.
+Use multiple `with()` calls if subsequent mixins should apply to added
+constructs.
+
+###### `mixins`<sup>Required</sup> <a name="mixins" id="cdk-turso.TursoDatabase.with.parameter.mixins"></a>
+
+- *Type:* ...constructs.IMixin[]
+
+The mixins to apply.
+
+---
+
 #### Static Functions <a name="Static Functions" id="Static Functions"></a>
 
 | **Name** | **Description** |
@@ -174,7 +232,7 @@ Returns a string representation of this construct.
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="cdk-turso.TursoDatabase.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="cdk-turso.TursoDatabase.isConstruct"></a>
 
 ```typescript
 import { TursoDatabase } from 'cdk-turso'
@@ -183,6 +241,20 @@ TursoDatabase.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="cdk-turso.TursoDatabase.isConstruct.parameter.x"></a>
 
@@ -197,11 +269,9 @@ Any object.
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#cdk-turso.TursoDatabase.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
-| <code><a href="#cdk-turso.TursoDatabase.property.apiToken">apiToken</a></code> | <code>aws-cdk-lib.aws_ssm.IParameter</code> | *No description.* |
 | <code><a href="#cdk-turso.TursoDatabase.property.databaseName">databaseName</a></code> | <code>string</code> | *No description.* |
 | <code><a href="#cdk-turso.TursoDatabase.property.dbId">dbId</a></code> | <code>string</code> | *No description.* |
 | <code><a href="#cdk-turso.TursoDatabase.property.hostname">hostname</a></code> | <code>string</code> | DNS hostname for the database (e.g., `my-db-my-org.turso.io`). Use with libSQL or HTTP connections. |
-| <code><a href="#cdk-turso.TursoDatabase.property.organizationSlug">organizationSlug</a></code> | <code>string</code> | *No description.* |
 
 ---
 
@@ -214,16 +284,6 @@ public readonly node: Node;
 - *Type:* constructs.Node
 
 The tree node.
-
----
-
-##### `apiToken`<sup>Required</sup> <a name="apiToken" id="cdk-turso.TursoDatabase.property.apiToken"></a>
-
-```typescript
-public readonly apiToken: IParameter;
-```
-
-- *Type:* aws-cdk-lib.aws_ssm.IParameter
 
 ---
 
@@ -259,13 +319,172 @@ DNS hostname for the database (e.g., `my-db-my-org.turso.io`). Use with libSQL o
 
 ---
 
-##### `organizationSlug`<sup>Required</sup> <a name="organizationSlug" id="cdk-turso.TursoDatabase.property.organizationSlug"></a>
+
+### TursoProvider <a name="TursoProvider" id="cdk-turso.TursoProvider"></a>
+
+Shared Lambda + CloudFormation custom-resource provider for all Turso resources.
+
+Create one per stack and pass it to every
+`TursoDatabase`, `TursoAuthToken`, etc.
+
+#### Initializers <a name="Initializers" id="cdk-turso.TursoProvider.Initializer"></a>
 
 ```typescript
-public readonly organizationSlug: string;
+import { TursoProvider } from 'cdk-turso'
+
+new TursoProvider(scope: Construct, id: string, props: TursoProviderProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#cdk-turso.TursoProvider.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
+| <code><a href="#cdk-turso.TursoProvider.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#cdk-turso.TursoProvider.Initializer.parameter.props">props</a></code> | <code><a href="#cdk-turso.TursoProviderProps">TursoProviderProps</a></code> | *No description.* |
+
+---
+
+##### `scope`<sup>Required</sup> <a name="scope" id="cdk-turso.TursoProvider.Initializer.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+##### `id`<sup>Required</sup> <a name="id" id="cdk-turso.TursoProvider.Initializer.parameter.id"></a>
+
+- *Type:* string
+
+---
+
+##### `props`<sup>Required</sup> <a name="props" id="cdk-turso.TursoProvider.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#cdk-turso.TursoProviderProps">TursoProviderProps</a>
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#cdk-turso.TursoProvider.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#cdk-turso.TursoProvider.with">with</a></code> | Applies one or more mixins to this construct. |
+
+---
+
+##### `toString` <a name="toString" id="cdk-turso.TursoProvider.toString"></a>
+
+```typescript
+public toString(): string
+```
+
+Returns a string representation of this construct.
+
+##### `with` <a name="with" id="cdk-turso.TursoProvider.with"></a>
+
+```typescript
+public with(mixins: ...IMixin[]): IConstruct
+```
+
+Applies one or more mixins to this construct.
+
+Mixins are applied in order. The list of constructs is captured at the
+start of the call, so constructs added by a mixin will not be visited.
+Use multiple `with()` calls if subsequent mixins should apply to added
+constructs.
+
+###### `mixins`<sup>Required</sup> <a name="mixins" id="cdk-turso.TursoProvider.with.parameter.mixins"></a>
+
+- *Type:* ...constructs.IMixin[]
+
+The mixins to apply.
+
+---
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#cdk-turso.TursoProvider.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+
+---
+
+##### `isConstruct` <a name="isConstruct" id="cdk-turso.TursoProvider.isConstruct"></a>
+
+```typescript
+import { TursoProvider } from 'cdk-turso'
+
+TursoProvider.isConstruct(x: any)
+```
+
+Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
+
+###### `x`<sup>Required</sup> <a name="x" id="cdk-turso.TursoProvider.isConstruct.parameter.x"></a>
+
+- *Type:* any
+
+Any object.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#cdk-turso.TursoProvider.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#cdk-turso.TursoProvider.property.handler">handler</a></code> | <code>aws-cdk-lib.aws_lambda.Function</code> | The Lambda function backing all Turso custom resources. |
+| <code><a href="#cdk-turso.TursoProvider.property.serviceToken">serviceToken</a></code> | <code>string</code> | The CDK custom-resource provider service token. |
+
+---
+
+##### `node`<sup>Required</sup> <a name="node" id="cdk-turso.TursoProvider.property.node"></a>
+
+```typescript
+public readonly node: Node;
+```
+
+- *Type:* constructs.Node
+
+The tree node.
+
+---
+
+##### `handler`<sup>Required</sup> <a name="handler" id="cdk-turso.TursoProvider.property.handler"></a>
+
+```typescript
+public readonly handler: Function;
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.Function
+
+The Lambda function backing all Turso custom resources.
+
+Use this to attach additional IAM permissions when a resource
+type needs them (e.g. `ssm:PutParameter` for auth-token storage).
+
+---
+
+##### `serviceToken`<sup>Required</sup> <a name="serviceToken" id="cdk-turso.TursoProvider.property.serviceToken"></a>
+
+```typescript
+public readonly serviceToken: string;
 ```
 
 - *Type:* string
+
+The CDK custom-resource provider service token.
 
 ---
 
@@ -286,22 +505,36 @@ const tursoAuthTokenProps: TursoAuthTokenProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#cdk-turso.TursoAuthTokenProps.property.database">database</a></code> | <code><a href="#cdk-turso.TursoDatabase">TursoDatabase</a></code> | The Turso database to create an auth token for. |
+| <code><a href="#cdk-turso.TursoAuthTokenProps.property.databaseName">databaseName</a></code> | <code>string</code> | The name of the Turso database to create an auth token for. |
+| <code><a href="#cdk-turso.TursoAuthTokenProps.property.organizationSlug">organizationSlug</a></code> | <code>string</code> | The Turso organization slug that owns the database. |
 | <code><a href="#cdk-turso.TursoAuthTokenProps.property.parameterName">parameterName</a></code> | <code>string</code> | The SSM parameter name where the generated JWT will be stored as a SecureString. |
+| <code><a href="#cdk-turso.TursoAuthTokenProps.property.provider">provider</a></code> | <code><a href="#cdk-turso.TursoProvider">TursoProvider</a></code> | *No description.* |
 | <code><a href="#cdk-turso.TursoAuthTokenProps.property.authorization">authorization</a></code> | <code>string</code> | Authorization level for the token. |
 | <code><a href="#cdk-turso.TursoAuthTokenProps.property.expiration">expiration</a></code> | <code>string</code> | Expiration time for the token (e.g., `"2w"`, `"1d30m"`). |
 
 ---
 
-##### `database`<sup>Required</sup> <a name="database" id="cdk-turso.TursoAuthTokenProps.property.database"></a>
+##### `databaseName`<sup>Required</sup> <a name="databaseName" id="cdk-turso.TursoAuthTokenProps.property.databaseName"></a>
 
 ```typescript
-public readonly database: TursoDatabase;
+public readonly databaseName: string;
 ```
 
-- *Type:* <a href="#cdk-turso.TursoDatabase">TursoDatabase</a>
+- *Type:* string
 
-The Turso database to create an auth token for.
+The name of the Turso database to create an auth token for.
+
+---
+
+##### `organizationSlug`<sup>Required</sup> <a name="organizationSlug" id="cdk-turso.TursoAuthTokenProps.property.organizationSlug"></a>
+
+```typescript
+public readonly organizationSlug: string;
+```
+
+- *Type:* string
+
+The Turso organization slug that owns the database.
 
 ---
 
@@ -314,6 +547,16 @@ public readonly parameterName: string;
 - *Type:* string
 
 The SSM parameter name where the generated JWT will be stored as a SecureString.
+
+---
+
+##### `provider`<sup>Required</sup> <a name="provider" id="cdk-turso.TursoAuthTokenProps.property.provider"></a>
+
+```typescript
+public readonly provider: TursoProvider;
+```
+
+- *Type:* <a href="#cdk-turso.TursoProvider">TursoProvider</a>
 
 ---
 
@@ -396,23 +639,13 @@ const tursoDatabaseProps: TursoDatabaseProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#cdk-turso.TursoDatabaseProps.property.apiToken">apiToken</a></code> | <code>aws-cdk-lib.aws_ssm.IParameter</code> | *No description.* |
 | <code><a href="#cdk-turso.TursoDatabaseProps.property.databaseName">databaseName</a></code> | <code>string</code> | *No description.* |
 | <code><a href="#cdk-turso.TursoDatabaseProps.property.group">group</a></code> | <code>string</code> | *No description.* |
 | <code><a href="#cdk-turso.TursoDatabaseProps.property.organizationSlug">organizationSlug</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#cdk-turso.TursoDatabaseProps.property.provider">provider</a></code> | <code><a href="#cdk-turso.TursoProvider">TursoProvider</a></code> | *No description.* |
 | <code><a href="#cdk-turso.TursoDatabaseProps.property.encryption">encryption</a></code> | <code><a href="#cdk-turso.TursoDatabaseEncryption">TursoDatabaseEncryption</a></code> | *No description.* |
 | <code><a href="#cdk-turso.TursoDatabaseProps.property.seed">seed</a></code> | <code><a href="#cdk-turso.TursoDatabaseSeed">TursoDatabaseSeed</a></code> | *No description.* |
 | <code><a href="#cdk-turso.TursoDatabaseProps.property.sizeLimit">sizeLimit</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `apiToken`<sup>Required</sup> <a name="apiToken" id="cdk-turso.TursoDatabaseProps.property.apiToken"></a>
-
-```typescript
-public readonly apiToken: IParameter;
-```
-
-- *Type:* aws-cdk-lib.aws_ssm.IParameter
 
 ---
 
@@ -443,6 +676,16 @@ public readonly organizationSlug: string;
 ```
 
 - *Type:* string
+
+---
+
+##### `provider`<sup>Required</sup> <a name="provider" id="cdk-turso.TursoDatabaseProps.property.provider"></a>
+
+```typescript
+public readonly provider: TursoProvider;
+```
+
+- *Type:* <a href="#cdk-turso.TursoProvider">TursoProvider</a>
 
 ---
 
@@ -523,6 +766,36 @@ public readonly timestamp: string;
 ```
 
 - *Type:* string
+
+---
+
+### TursoProviderProps <a name="TursoProviderProps" id="cdk-turso.TursoProviderProps"></a>
+
+#### Initializer <a name="Initializer" id="cdk-turso.TursoProviderProps.Initializer"></a>
+
+```typescript
+import { TursoProviderProps } from 'cdk-turso'
+
+const tursoProviderProps: TursoProviderProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#cdk-turso.TursoProviderProps.property.apiToken">apiToken</a></code> | <code>aws-cdk-lib.aws_ssm.IParameter</code> | SSM parameter that holds the Turso platform API token (stored as SecureString). |
+
+---
+
+##### `apiToken`<sup>Required</sup> <a name="apiToken" id="cdk-turso.TursoProviderProps.property.apiToken"></a>
+
+```typescript
+public readonly apiToken: IParameter;
+```
+
+- *Type:* aws-cdk-lib.aws_ssm.IParameter
+
+SSM parameter that holds the Turso platform API token (stored as SecureString).
 
 ---
 

@@ -1,9 +1,6 @@
-import { CustomResource, Duration } from "aws-cdk-lib"
-import { Code, Function, Runtime, RuntimeFamily } from "aws-cdk-lib/aws-lambda"
-import type { IParameter } from "aws-cdk-lib/aws-ssm"
-import { Provider } from "aws-cdk-lib/custom-resources"
+import { CustomResource } from "aws-cdk-lib"
 import { Construct } from "constructs"
-import * as path from "path"
+import type { TursoProvider } from "./turso-provider"
 
 export interface TursoDatabaseSeed {
   readonly type: string
@@ -17,10 +14,10 @@ export interface TursoDatabaseEncryption {
 }
 
 export interface TursoDatabaseProps {
+  readonly provider: TursoProvider
   readonly databaseName: string
   readonly group: string
   readonly organizationSlug: string
-  readonly apiToken: IParameter
   readonly sizeLimit?: string
   readonly seed?: TursoDatabaseSeed
   readonly encryption?: TursoDatabaseEncryption
@@ -34,14 +31,9 @@ export class TursoDatabase extends Construct {
    */
   public readonly hostname: string
   public readonly databaseName: string
-  public readonly organizationSlug: string
-  public readonly apiToken: IParameter
 
   constructor(scope: Construct, id: string, props: TursoDatabaseProps) {
     super(scope, id)
-
-    this.organizationSlug = props.organizationSlug
-    this.apiToken = props.apiToken
 
     if (!/^[a-z0-9-]+$/.test(props.databaseName)) {
       throw new Error(
@@ -52,23 +44,8 @@ export class TursoDatabase extends Construct {
       throw new Error("databaseName must be at most 64 characters")
     }
 
-    const handler = new Function(this, "Handler", {
-      runtime: new Runtime("nodejs24.x", RuntimeFamily.NODEJS),
-      handler: "index.handler",
-      code: Code.fromAsset(path.join(__dirname, "handler")),
-      timeout: Duration.minutes(3),
-      environment: {
-        TURSO_API_TOKEN_PARAMETER_NAME: props.apiToken.parameterName,
-      },
-    })
-
-    props.apiToken.grantRead(handler)
-
-    const provider = new Provider(this, "Provider", {
-      onEventHandler: handler,
-    })
-
     const resourceProps: Record<string, unknown> = {
+      ResourceType: "Database",
       DatabaseName: props.databaseName,
       Group: props.group,
       OrganizationSlug: props.organizationSlug,
@@ -85,7 +62,7 @@ export class TursoDatabase extends Construct {
     }
 
     const cr = new CustomResource(this, "TursoDb", {
-      serviceToken: provider.serviceToken,
+      serviceToken: props.provider.serviceToken,
       properties: resourceProps,
     })
 

@@ -1,16 +1,20 @@
-import { CustomResource, Duration, Stack } from "aws-cdk-lib"
+import { CustomResource, Stack } from "aws-cdk-lib"
 import { Effect, PolicyStatement } from "aws-cdk-lib/aws-iam"
-import { Code, Function, Runtime, RuntimeFamily } from "aws-cdk-lib/aws-lambda"
-import { Provider } from "aws-cdk-lib/custom-resources"
 import { Construct } from "constructs"
-import * as path from "path"
-import type { TursoDatabase } from "./turso-database"
+import type { TursoProvider } from "./turso-provider"
 
 export interface TursoAuthTokenProps {
+  readonly provider: TursoProvider
+
   /**
-   * The Turso database to create an auth token for.
+   * The name of the Turso database to create an auth token for.
    */
-  readonly database: TursoDatabase
+  readonly databaseName: string
+
+  /**
+   * The Turso organization slug that owns the database.
+   */
+  readonly organizationSlug: string
 
   /**
    * The SSM parameter name where the generated JWT will be stored
@@ -50,18 +54,6 @@ export class TursoAuthToken extends Construct {
       throw new Error('authorization must be "full-access" or "read-only"')
     }
 
-    const handler = new Function(this, "Handler", {
-      runtime: new Runtime("nodejs24.x", RuntimeFamily.NODEJS),
-      handler: "index.handler",
-      code: Code.fromAsset(path.join(__dirname, "handler-auth-token")),
-      timeout: Duration.minutes(3),
-      environment: {
-        TURSO_API_TOKEN_PARAMETER_NAME: props.database.apiToken.parameterName,
-      },
-    })
-
-    props.database.apiToken.grantRead(handler)
-
     const parameterArn = Stack.of(this).formatArn({
       service: "ssm",
       resource: "parameter",
@@ -70,7 +62,7 @@ export class TursoAuthToken extends Construct {
         : props.parameterName,
     })
 
-    handler.addToRolePolicy(
+    props.provider.handler.addToRolePolicy(
       new PolicyStatement({
         effect: Effect.ALLOW,
         actions: ["ssm:PutParameter", "ssm:DeleteParameter"],
@@ -78,13 +70,10 @@ export class TursoAuthToken extends Construct {
       }),
     )
 
-    const provider = new Provider(this, "Provider", {
-      onEventHandler: handler,
-    })
-
     const resourceProps: Record<string, unknown> = {
-      DatabaseName: props.database.databaseName,
-      OrganizationSlug: props.database.organizationSlug,
+      ResourceType: "AuthToken",
+      DatabaseName: props.databaseName,
+      OrganizationSlug: props.organizationSlug,
       ParameterName: props.parameterName,
     }
 
@@ -96,7 +85,7 @@ export class TursoAuthToken extends Construct {
     }
 
     new CustomResource(this, "TursoAuthToken", {
-      serviceToken: provider.serviceToken,
+      serviceToken: props.provider.serviceToken,
       properties: resourceProps,
     })
 
