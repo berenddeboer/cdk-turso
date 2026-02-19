@@ -1,6 +1,6 @@
 # CDK Turso
 
-CDK construct to create a [Turso cloud](https://docs.turso.tech/turso-cloud) database.
+CDK constructs to create [Turso cloud](https://docs.turso.tech/turso-cloud) databases and manage auth tokens.
 
 ## Installation
 
@@ -10,30 +10,38 @@ npm install cdk-turso
 
 ## Usage
 
+First, create a `TursoProvider` with your API token:
+
 ```typescript
 import { Stack } from 'aws-cdk-lib';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
-import { TursoDatabase } from 'cdk-turso';
+import { TursoProvider, TursoDatabase, TursoAuthToken } from 'cdk-turso';
 
 const stack = new Stack();
 
-// SSM Parameter containing your Turso API token
+// SSM Parameter containing your Turso API token (must be a SecureString)
 const apiToken = new StringParameter(stack, 'TursoApiToken', {
   parameterName: '/turso/api-token',
   stringValue: 'your-api-token',
+  type: ParameterType.SECURE_STRING,
 });
 
-const database = new TursoDatabase(stack, 'Database', {
-  databaseName: 'my-database',
-  group: 'group-name',
-  organizationSlug: 'my-org',
+// Create the provider (one per stack)
+const provider = new TursoProvider(stack, 'TursoProvider', {
   apiToken,
 });
 
-// Use the database attributes
-database.dbId;     // Database ID
-database.hostname; // Database hostname
-database.databaseName; // Database name
+const database = new TursoDatabase(stack, 'Database', {
+  provider,
+  databaseName: 'my-database',
+  group: 'group-name',
+  organizationSlug: 'my-org',
+});
+
+// Access database attributes
+database.dbId;      // Database ID
+database.hostname;  // Database hostname (e.g., my-database-my-org.turso.io)
+database.databaseName;  // Database name
 ```
 
 ### Auth Token
@@ -41,10 +49,10 @@ database.databaseName; // Database name
 Generate a database auth token and store it as a SecureString in SSM Parameter Store:
 
 ```typescript
-import { TursoAuthToken } from 'cdk-turso';
-
 const authToken = new TursoAuthToken(stack, 'AuthToken', {
-  database,
+  provider,
+  databaseName: database.databaseName,
+  organizationSlug: 'my-org',
   parameterName: '/turso/db-token',
   expiration: '2w',          // optional, default: 'never'
   authorization: 'read-only', // optional, default: 'full-access'
@@ -56,14 +64,28 @@ authToken.parameterName;
 
 ## API
 
+### TursoProviderProps
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `apiToken` | `ssm.IParameter` | Yes | SSM Parameter containing the Turso platform API token (must be SecureString) |
+| `logGroup` | `ILogGroup` | No | Optional CloudWatch log group for the Lambda handler |
+
+### TursoProvider
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| `handler` | `Function` | The Lambda function backing all Turso custom resources (for attaching IAM permissions) |
+| `serviceToken` | `string` | The CDK custom-resource provider service token |
+
 ### TursoDatabaseProps
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
+| `provider` | `TursoProvider` | Yes | The Turso provider to use for this database |
 | `databaseName` | `string` | Yes | Database name (lowercase, numbers, dashes only, max 64 chars) |
 | `group` | `string` | Yes | Turso group name (must already exist) |
 | `organizationSlug` | `string` | Yes | Organization slug |
-| `apiToken` | `ssm.IParameter` | Yes | SSM Parameter containing the Turso API token |
 | `sizeLimit` | `string` | No | Size limit (e.g., '256mb') |
 | `seed` | `TursoDatabaseSeed` | No | Database seed configuration |
 | `encryption` | `TursoDatabaseEncryption` | No | Encryption configuration |
@@ -92,16 +114,16 @@ interface TursoDatabaseEncryption {
 | Attribute | Type | Description |
 |-----------|------|-------------|
 | `dbId` | `string` | Turso database ID |
-| `hostname` | `string` | DNS hostname (e.g., `my-db-my-org.turso.io`) for libSQL/HTTP connections |
+| `hostname` | `string` | DNS hostname (e.g., `my-database-my-org.turso.io`) for libSQL/HTTP connections |
 | `databaseName` | `string` | Database name |
-| `organizationSlug` | `string` | Organization slug |
-| `apiToken` | `ssm.IParameter` | SSM Parameter containing the Turso API token |
 
 ### TursoAuthTokenProps
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| `database` | `TursoDatabase` | Yes | The Turso database to create an auth token for |
+| `provider` | `TursoProvider` | Yes | The Turso provider to use for this auth token |
+| `databaseName` | `string` | Yes | The name of the Turso database to create an auth token for |
+| `organizationSlug` | `string` | Yes | The Turso organization slug that owns the database |
 | `parameterName` | `string` | Yes | SSM parameter name where the generated JWT will be stored as a SecureString |
 | `expiration` | `string` | No | Token expiry (e.g., `'2w'`, `'1d30m'`). Default: `'never'` |
 | `authorization` | `string` | No | `'full-access'` or `'read-only'`. Default: `'full-access'` |
