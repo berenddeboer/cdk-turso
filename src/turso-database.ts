@@ -1,6 +1,6 @@
 import { CustomResource } from "aws-cdk-lib"
 import { Construct } from "constructs"
-import type { TursoProvider } from "./turso-provider"
+import type { ITursoProvider } from "./turso-provider"
 
 export interface TursoDatabaseSeed {
   readonly type: string
@@ -14,7 +14,7 @@ export interface TursoDatabaseEncryption {
 }
 
 export interface TursoDatabaseProps {
-  readonly provider: TursoProvider
+  readonly provider: ITursoProvider
   readonly databaseName: string
   readonly group: string
   readonly organizationSlug: string

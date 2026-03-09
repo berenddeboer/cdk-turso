@@ -14,6 +14,29 @@ describe("TursoDatabase", () => {
     return { stack, provider }
   }
 
+  test("supports imported provider service token", () => {
+    const stack = new Stack()
+    const provider = TursoProvider.fromServiceToken(
+      stack,
+      "ImportedProvider",
+      "arn:aws:lambda:us-east-1:123456789012:function:turso-provider",
+    )
+
+    new TursoDatabase(stack, "Database", {
+      provider,
+      databaseName: "test-db",
+      group: "group1",
+      organizationSlug: "myorg",
+    })
+
+    const template = Template.fromStack(stack)
+    template.hasResourceProperties("Custom::TursoDatabase", {
+      ServiceToken:
+        "arn:aws:lambda:us-east-1:123456789012:function:turso-provider",
+    })
+    template.resourceCountIs("AWS::Lambda::Function", 0)
+  })
+
   test("creates custom resource with correct properties", () => {
     const { stack, provider } = createStack()
     new TursoDatabase(stack, "Database", {

@@ -278,6 +278,8 @@ DNS hostname for the database (e.g., `my-db-my-org.turso.io`). Use with libSQL o
 
 ### TursoProvider <a name="TursoProvider" id="cdk-turso.TursoProvider"></a>
 
+- *Implements:* <a href="#cdk-turso.ITursoProvider">ITursoProvider</a>
+
 Shared Lambda + CloudFormation custom-resource provider for all Turso resources.
 
 Create one per stack and pass it to every
@@ -338,6 +340,7 @@ Returns a string representation of this construct.
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#cdk-turso.TursoProvider.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+| <code><a href="#cdk-turso.TursoProvider.fromServiceToken">fromServiceToken</a></code> | Imports an existing Turso provider by service token. |
 
 ---
 
@@ -370,6 +373,34 @@ this type-testing method instead.
 - *Type:* any
 
 Any object.
+
+---
+
+##### `fromServiceToken` <a name="fromServiceToken" id="cdk-turso.TursoProvider.fromServiceToken"></a>
+
+```typescript
+import { TursoProvider } from 'cdk-turso'
+
+TursoProvider.fromServiceToken(scope: Construct, id: string, serviceToken: string)
+```
+
+Imports an existing Turso provider by service token.
+
+###### `scope`<sup>Required</sup> <a name="scope" id="cdk-turso.TursoProvider.fromServiceToken.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+###### `id`<sup>Required</sup> <a name="id" id="cdk-turso.TursoProvider.fromServiceToken.parameter.id"></a>
+
+- *Type:* string
+
+---
+
+###### `serviceToken`<sup>Required</sup> <a name="serviceToken" id="cdk-turso.TursoProvider.fromServiceToken.parameter.serviceToken"></a>
+
+- *Type:* string
 
 ---
 
@@ -442,7 +473,7 @@ const tursoAuthTokenProps: TursoAuthTokenProps = { ... }
 | <code><a href="#cdk-turso.TursoAuthTokenProps.property.databaseName">databaseName</a></code> | <code>string</code> | The name of the Turso database to create an auth token for. |
 | <code><a href="#cdk-turso.TursoAuthTokenProps.property.organizationSlug">organizationSlug</a></code> | <code>string</code> | The Turso organization slug that owns the database. |
 | <code><a href="#cdk-turso.TursoAuthTokenProps.property.parameterName">parameterName</a></code> | <code>string</code> | The SSM parameter name where the generated JWT will be stored as a SecureString. |
-| <code><a href="#cdk-turso.TursoAuthTokenProps.property.provider">provider</a></code> | <code><a href="#cdk-turso.TursoProvider">TursoProvider</a></code> | *No description.* |
+| <code><a href="#cdk-turso.TursoAuthTokenProps.property.provider">provider</a></code> | <code><a href="#cdk-turso.ITursoProvider">ITursoProvider</a></code> | *No description.* |
 | <code><a href="#cdk-turso.TursoAuthTokenProps.property.authorization">authorization</a></code> | <code>string</code> | Authorization level for the token. |
 | <code><a href="#cdk-turso.TursoAuthTokenProps.property.expiration">expiration</a></code> | <code>string</code> | Expiration time for the token (e.g., `"2w"`, `"1d30m"`). |
 
@@ -487,10 +518,10 @@ The SSM parameter name where the generated JWT will be stored as a SecureString.
 ##### `provider`<sup>Required</sup> <a name="provider" id="cdk-turso.TursoAuthTokenProps.property.provider"></a>
 
 ```typescript
-public readonly provider: TursoProvider;
+public readonly provider: ITursoProvider;
 ```
 
-- *Type:* <a href="#cdk-turso.TursoProvider">TursoProvider</a>
+- *Type:* <a href="#cdk-turso.ITursoProvider">ITursoProvider</a>
 
 ---
 
@@ -576,7 +607,7 @@ const tursoDatabaseProps: TursoDatabaseProps = { ... }
 | <code><a href="#cdk-turso.TursoDatabaseProps.property.databaseName">databaseName</a></code> | <code>string</code> | *No description.* |
 | <code><a href="#cdk-turso.TursoDatabaseProps.property.group">group</a></code> | <code>string</code> | *No description.* |
 | <code><a href="#cdk-turso.TursoDatabaseProps.property.organizationSlug">organizationSlug</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#cdk-turso.TursoDatabaseProps.property.provider">provider</a></code> | <code><a href="#cdk-turso.TursoProvider">TursoProvider</a></code> | *No description.* |
+| <code><a href="#cdk-turso.TursoDatabaseProps.property.provider">provider</a></code> | <code><a href="#cdk-turso.ITursoProvider">ITursoProvider</a></code> | *No description.* |
 | <code><a href="#cdk-turso.TursoDatabaseProps.property.encryption">encryption</a></code> | <code><a href="#cdk-turso.TursoDatabaseEncryption">TursoDatabaseEncryption</a></code> | *No description.* |
 | <code><a href="#cdk-turso.TursoDatabaseProps.property.seed">seed</a></code> | <code><a href="#cdk-turso.TursoDatabaseSeed">TursoDatabaseSeed</a></code> | *No description.* |
 | <code><a href="#cdk-turso.TursoDatabaseProps.property.sizeLimit">sizeLimit</a></code> | <code>string</code> | *No description.* |
@@ -616,10 +647,10 @@ public readonly organizationSlug: string;
 ##### `provider`<sup>Required</sup> <a name="provider" id="cdk-turso.TursoDatabaseProps.property.provider"></a>
 
 ```typescript
-public readonly provider: TursoProvider;
+public readonly provider: ITursoProvider;
 ```
 
-- *Type:* <a href="#cdk-turso.TursoProvider">TursoProvider</a>
+- *Type:* <a href="#cdk-turso.ITursoProvider">ITursoProvider</a>
 
 ---
 
@@ -749,4 +780,32 @@ If not provided, a log group will be automatically created.
 ---
 
 
+## Protocols <a name="Protocols" id="Protocols"></a>
+
+### ITursoProvider <a name="ITursoProvider" id="cdk-turso.ITursoProvider"></a>
+
+- *Implemented By:* <a href="#cdk-turso.TursoProvider">TursoProvider</a>, <a href="#cdk-turso.ITursoProvider">ITursoProvider</a>
+
+Shared Turso custom-resource provider contract.
+
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#cdk-turso.ITursoProvider.property.serviceToken">serviceToken</a></code> | <code>string</code> | The CDK custom-resource provider service token. |
+
+---
+
+##### `serviceToken`<sup>Required</sup> <a name="serviceToken" id="cdk-turso.ITursoProvider.property.serviceToken"></a>
+
+```typescript
+public readonly serviceToken: string;
+```
+
+- *Type:* string
+
+The CDK custom-resource provider service token.
+
+---
 

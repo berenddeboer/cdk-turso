@@ -6,6 +6,26 @@ import { Provider } from "aws-cdk-lib/custom-resources"
 import { Construct } from "constructs"
 import * as path from "path"
 
+/**
+ * Shared Turso custom-resource provider contract.
+ */
+export interface ITursoProvider {
+  /**
+   * The CDK custom-resource provider service token.
+   */
+  readonly serviceToken: string
+}
+
+class ImportedTursoProvider extends Construct implements ITursoProvider {
+  public readonly serviceToken: string
+
+  constructor(scope: Construct, id: string, serviceToken: string) {
+    super(scope, id)
+
+    this.serviceToken = serviceToken
+  }
+}
+
 export interface TursoProviderProps {
   /**
    * SSM parameter that holds the Turso platform API token
@@ -25,7 +45,18 @@ export interface TursoProviderProps {
  * Turso resources.  Create one per stack and pass it to every
  * `TursoDatabase`, `TursoAuthToken`, etc.
  */
-export class TursoProvider extends Construct {
+export class TursoProvider extends Construct implements ITursoProvider {
+  /**
+   * Imports an existing Turso provider by service token.
+   */
+  public static fromServiceToken(
+    scope: Construct,
+    id: string,
+    serviceToken: string,
+  ): ITursoProvider {
+    return new ImportedTursoProvider(scope, id, serviceToken)
+  }
+
   /**
    * The Lambda function backing all Turso custom resources.
    * Use this to attach additional IAM permissions when a resource
