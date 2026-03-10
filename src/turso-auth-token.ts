@@ -1,10 +1,10 @@
 import { CustomResource, Stack } from "aws-cdk-lib"
 import { Effect, PolicyStatement } from "aws-cdk-lib/aws-iam"
 import { Construct } from "constructs"
-import type { TursoProvider } from "./turso-provider"
+import type { ITursoProvider } from "./turso-provider"
 
 export interface TursoAuthTokenProps {
-  readonly provider: TursoProvider
+  readonly provider: ITursoProvider
 
   /**
    * The name of the Turso database to create an auth token for.
@@ -62,7 +62,13 @@ export class TursoAuthToken extends Construct {
         : props.parameterName,
     })
 
-    props.provider.handler.addToRolePolicy(
+    const providerWithHandler = props.provider as ITursoProvider & {
+      readonly handler?: {
+        addToRolePolicy(statement: PolicyStatement): void
+      }
+    }
+
+    providerWithHandler.handler?.addToRolePolicy(
       new PolicyStatement({
         effect: Effect.ALLOW,
         actions: ["ssm:PutParameter", "ssm:DeleteParameter"],

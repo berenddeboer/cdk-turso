@@ -10,11 +10,11 @@ npm install cdk-turso
 
 ## Usage
 
-First, create a `TursoProvider` with your API token:
+Create a `TursoProvider` with your API token:
 
 ```typescript
 import { Stack } from 'aws-cdk-lib';
-import { StringParameter } from 'aws-cdk-lib/aws-ssm';
+import { ParameterType, StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { TursoProvider, TursoDatabase, TursoAuthToken } from 'cdk-turso';
 
 const stack = new Stack();
@@ -42,6 +42,16 @@ const database = new TursoDatabase(stack, 'Database', {
 database.dbId;      // Database ID
 database.hostname;  // Database hostname (e.g., my-database-my-org.turso.io)
 database.databaseName;  // Database name
+```
+
+If you run a shared provider in another stack, import it by service token:
+
+```typescript
+const provider = TursoProvider.fromServiceToken(
+  stack,
+  'TursoProvider',
+  'arn:aws:lambda:us-east-1:123456789012:function:shared-turso-provider',
+);
 ```
 
 ### Auth Token
@@ -78,11 +88,23 @@ authToken.parameterName;
 | `handler` | `Function` | The Lambda function backing all Turso custom resources (for attaching IAM permissions) |
 | `serviceToken` | `string` | The CDK custom-resource provider service token |
 
+Static method:
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `fromServiceToken(scope, id, serviceToken)` | `ITursoProvider` | Imports an existing Turso custom-resource provider |
+
+### ITursoProvider
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| `serviceToken` | `string` | The CDK custom-resource provider service token |
+
 ### TursoDatabaseProps
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| `provider` | `TursoProvider` | Yes | The Turso provider to use for this database |
+| `provider` | `ITursoProvider` | Yes | The Turso provider to use for this database |
 | `databaseName` | `string` | Yes | Database name (lowercase, numbers, dashes only, max 64 chars) |
 | `group` | `string` | Yes | Turso group name (must already exist) |
 | `organizationSlug` | `string` | Yes | Organization slug |
@@ -121,7 +143,7 @@ interface TursoDatabaseEncryption {
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| `provider` | `TursoProvider` | Yes | The Turso provider to use for this auth token |
+| `provider` | `ITursoProvider` | Yes | The Turso provider to use for this auth token |
 | `databaseName` | `string` | Yes | The name of the Turso database to create an auth token for |
 | `organizationSlug` | `string` | Yes | The Turso organization slug that owns the database |
 | `parameterName` | `string` | Yes | SSM parameter name where the generated JWT will be stored as a SecureString |

@@ -14,6 +14,32 @@ describe("TursoAuthToken", () => {
     return { stack, provider }
   }
 
+  test("supports imported provider without handler", () => {
+    const stack = new Stack()
+    const provider = TursoProvider.fromServiceToken(
+      stack,
+      "ImportedProvider",
+      "arn:aws:lambda:us-east-1:123456789012:function:turso-provider",
+    )
+
+    new TursoAuthToken(stack, "AuthToken", {
+      provider,
+      databaseName: "test-db",
+      organizationSlug: "myorg",
+      parameterName: "/turso/db-token",
+    })
+
+    const template = Template.fromStack(stack)
+    template.hasResourceProperties("Custom::TursoAuthToken", {
+      ServiceToken:
+        "arn:aws:lambda:us-east-1:123456789012:function:turso-provider",
+      ResourceType: "AuthToken",
+      ParameterName: "/turso/db-token",
+    })
+    template.resourceCountIs("AWS::Lambda::Function", 0)
+    template.resourceCountIs("AWS::IAM::Policy", 0)
+  })
+
   test("creates custom resource with correct properties", () => {
     const { stack, provider } = createStack()
     new TursoAuthToken(stack, "AuthToken", {
