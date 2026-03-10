@@ -163,6 +163,56 @@ describe("handler", () => {
       )
     })
 
+    test("create with adopt set to string true adopts existing database", async () => {
+      const mockFetch = jest
+        .fn()
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 409,
+          text: async () => "database already exists",
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            database: {
+              DbId: "db-123",
+              Hostname: "db-123.db.turso.io",
+              Name: "test-db",
+            },
+          }),
+        })
+      global.fetch = mockFetch
+
+      const event: CloudFormationCustomResourceEvent = {
+        RequestType: "Create",
+        ResourceProperties: {
+          ServiceToken: "arn:aws:lambda:us-east-1:123456789012:function:test",
+          ResourceType: "Database",
+          DatabaseName: "test-db",
+          Group: "group1",
+          OrganizationSlug: "myorg",
+          Adopt: "true",
+        },
+      }
+
+      const result = await handler(event)
+
+      expect(result.PhysicalResourceId).toBe("test-db")
+      expect(result.Data).toEqual({
+        DbId: "db-123",
+        Hostname: "db-123.db.turso.io",
+        Name: "test-db",
+      })
+
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        2,
+        "https://api.turso.tech/v1/organizations/myorg/databases/test-db",
+        expect.objectContaining({
+          method: "GET",
+        }),
+      )
+    })
+
     test("create with adopt enabled still throws for other errors", async () => {
       const mockFetch = jest.fn().mockResolvedValue({
         ok: false,

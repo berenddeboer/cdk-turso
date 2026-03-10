@@ -40,6 +40,14 @@ function isAlreadyExistsError(status: number, errorText: string): boolean {
   return status === 409 || /already exists|already been taken/i.test(errorText)
 }
 
+function isTrueValue(value: unknown): boolean {
+  if (typeof value === "string") {
+    return value.trim().toLowerCase() === "true"
+  }
+
+  return value === true
+}
+
 async function getApiToken(parameterName: string): Promise<string> {
   const command = new GetParameterCommand({
     Name: parameterName,
@@ -68,7 +76,7 @@ interface DatabaseResourceProperties {
   DatabaseName: string
   Group: string
   OrganizationSlug: string
-  Adopt?: boolean
+  Adopt?: boolean | string
   SizeLimit?: string
   Seed?: {
     type: string
@@ -105,7 +113,7 @@ async function handleDatabase(
 
   if (RequestType === "Create") {
     const dbName = ResourceProperties.DatabaseName
-    const adopt = ResourceProperties.Adopt === true
+    const adopt = isTrueValue(ResourceProperties.Adopt)
     const body: Record<string, unknown> = {
       name: dbName,
       group: ResourceProperties.Group,
