@@ -21,15 +21,23 @@ async function fetchWithRetry(
   options: RequestInit,
   errorMessage: string,
   allow404 = false,
+  allowError?: (status: number, errorText: string) => boolean,
 ): Promise<Response> {
   return backOff(async () => {
     const response = await fetch(url, options)
     if (!response.ok && !(allow404 && response.status === 404)) {
       const errorText = await response.text()
+      if (allowError?.(response.status, errorText)) {
+        return response
+      }
       throw new Error(`${errorMessage}: ${response.status} ${errorText}`)
     }
     return response
   }, retryOptions)
+}
+
+function isAlreadyExistsError(status: number, errorText: string): boolean {
+  return status === 409 || /already exists|already been taken/i.test(errorText)
 }
 
 async function getApiToken(parameterName: string): Promise<string> {
@@ -60,6 +68,7 @@ interface DatabaseResourceProperties {
   DatabaseName: string
   Group: string
   OrganizationSlug: string
+  Adopt?: boolean
   SizeLimit?: string
   Seed?: {
     type: string
@@ -96,6 +105,7 @@ async function handleDatabase(
 
   if (RequestType === "Create") {
     const dbName = ResourceProperties.DatabaseName
+    const adopt = ResourceProperties.Adopt === true
     const body: Record<string, unknown> = {
       name: dbName,
       group: ResourceProperties.Group,
@@ -121,7 +131,36 @@ async function handleDatabase(
         body: JSON.stringify(body),
       },
       "Failed to create database",
+      false,
+      (status, errorText) => {
+        return adopt && isAlreadyExistsError(status, errorText)
+      },
     )
+
+    if (!response.ok) {
+      const existingDbName = encodeURIComponent(dbName)
+      const existingResponse = await fetchWithRetry(
+        `${baseUrl}/organizations/${orgSlug}/databases/${existingDbName}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${apiToken}`,
+          },
+        },
+        "Failed to get database",
+      )
+
+      const existingData =
+        (await existingResponse.json()) as TursoDatabaseResponse
+      return {
+        PhysicalResourceId: dbName,
+        Data: {
+          DbId: existingData.database.DbId,
+          Hostname: existingData.database.Hostname,
+          Name: existingData.database.Name,
+        },
+      }
+    }
 
     const data = (await response.json()) as TursoDatabaseResponse
     return {

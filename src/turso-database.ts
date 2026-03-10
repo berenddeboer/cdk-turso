@@ -1,4 +1,4 @@
-import { CustomResource } from "aws-cdk-lib"
+import { CustomResource, RemovalPolicy } from "aws-cdk-lib"
 import { Construct } from "constructs"
 import type { ITursoProvider } from "./turso-provider"
 
@@ -21,6 +21,23 @@ export interface TursoDatabaseProps {
   readonly sizeLimit?: string
   readonly seed?: TursoDatabaseSeed
   readonly encryption?: TursoDatabaseEncryption
+
+  /**
+   * If true, the provider will adopt an existing Turso database when
+   * creation reports that the database already exists.
+   *
+   * This flag is only used during Create requests.
+   *
+   * @default false
+   */
+  readonly adopt?: boolean
+
+  /**
+   * Removal policy for the underlying custom resource.
+   * Set to `RemovalPolicy.RETAIN` to keep the Turso database on stack
+   * deletion.
+   */
+  readonly removalPolicy?: RemovalPolicy
 }
 
 export class TursoDatabase extends Construct {
@@ -60,12 +77,19 @@ export class TursoDatabase extends Construct {
     if (props.encryption) {
       resourceProps.Encryption = props.encryption
     }
+    if (props.adopt !== undefined) {
+      resourceProps.Adopt = props.adopt
+    }
 
     const cr = new CustomResource(this, "TursoDb", {
       serviceToken: props.provider.serviceToken,
       resourceType: "Custom::TursoDatabase",
       properties: resourceProps,
     })
+
+    if (props.removalPolicy !== undefined) {
+      cr.applyRemovalPolicy(props.removalPolicy)
+    }
 
     this.dbId = cr.getAttString("DbId")
     this.hostname = cr.getAttString("Hostname")

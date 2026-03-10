@@ -13,7 +13,7 @@ npm install cdk-turso
 Create a `TursoProvider` with your API token:
 
 ```typescript
-import { Stack } from 'aws-cdk-lib';
+import { RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { ParameterType, StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { TursoProvider, TursoDatabase, TursoAuthToken } from 'cdk-turso';
 
@@ -36,6 +36,8 @@ const database = new TursoDatabase(stack, 'Database', {
   databaseName: 'my-database',
   group: 'group-name',
   organizationSlug: 'my-org',
+  adopt: true, // optional: adopt existing database if it already exists
+  removalPolicy: RemovalPolicy.RETAIN, // optional: keep DB on stack delete
 });
 
 // Access database attributes
@@ -66,6 +68,7 @@ const authToken = new TursoAuthToken(stack, 'AuthToken', {
   parameterName: '/turso/db-token',
   expiration: '2w',          // optional, default: 'never'
   authorization: 'read-only', // optional, default: 'full-access'
+  removalPolicy: RemovalPolicy.RETAIN, // optional: keep SSM parameter
 });
 
 // The SSM parameter name where the JWT is stored
@@ -111,6 +114,8 @@ Static method:
 | `sizeLimit` | `string` | No | Size limit (e.g., '256mb') |
 | `seed` | `TursoDatabaseSeed` | No | Database seed configuration |
 | `encryption` | `TursoDatabaseEncryption` | No | Encryption configuration |
+| `adopt` | `boolean` | No | On create, adopt an existing database when create returns "already exists" |
+| `removalPolicy` | `RemovalPolicy` | No | Custom resource removal policy (for example `RemovalPolicy.RETAIN`) |
 
 ### TursoDatabaseSeed
 
@@ -149,6 +154,7 @@ interface TursoDatabaseEncryption {
 | `parameterName` | `string` | Yes | SSM parameter name where the generated JWT will be stored as a SecureString |
 | `expiration` | `string` | No | Token expiry (e.g., `'2w'`, `'1d30m'`). Default: `'never'` |
 | `authorization` | `string` | No | `'full-access'` or `'read-only'`. Default: `'full-access'` |
+| `removalPolicy` | `RemovalPolicy` | No | Custom resource removal policy (for example `RemovalPolicy.RETAIN`) |
 
 ### TursoAuthToken
 

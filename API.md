@@ -476,6 +476,7 @@ const tursoAuthTokenProps: TursoAuthTokenProps = { ... }
 | <code><a href="#cdk-turso.TursoAuthTokenProps.property.provider">provider</a></code> | <code><a href="#cdk-turso.ITursoProvider">ITursoProvider</a></code> | *No description.* |
 | <code><a href="#cdk-turso.TursoAuthTokenProps.property.authorization">authorization</a></code> | <code>string</code> | Authorization level for the token. |
 | <code><a href="#cdk-turso.TursoAuthTokenProps.property.expiration">expiration</a></code> | <code>string</code> | Expiration time for the token (e.g., `"2w"`, `"1d30m"`). |
+| <code><a href="#cdk-turso.TursoAuthTokenProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Removal policy for the underlying custom resource. |
 
 ---
 
@@ -551,6 +552,21 @@ Expiration time for the token (e.g., `"2w"`, `"1d30m"`).
 
 ---
 
+##### `removalPolicy`<sup>Optional</sup> <a name="removalPolicy" id="cdk-turso.TursoAuthTokenProps.property.removalPolicy"></a>
+
+```typescript
+public readonly removalPolicy: RemovalPolicy;
+```
+
+- *Type:* aws-cdk-lib.RemovalPolicy
+
+Removal policy for the underlying custom resource.
+
+Set to `RemovalPolicy.RETAIN` to keep the SSM parameter on stack
+deletion.
+
+---
+
 ### TursoDatabaseEncryption <a name="TursoDatabaseEncryption" id="cdk-turso.TursoDatabaseEncryption"></a>
 
 #### Initializer <a name="Initializer" id="cdk-turso.TursoDatabaseEncryption.Initializer"></a>
@@ -608,7 +624,9 @@ const tursoDatabaseProps: TursoDatabaseProps = { ... }
 | <code><a href="#cdk-turso.TursoDatabaseProps.property.group">group</a></code> | <code>string</code> | *No description.* |
 | <code><a href="#cdk-turso.TursoDatabaseProps.property.organizationSlug">organizationSlug</a></code> | <code>string</code> | *No description.* |
 | <code><a href="#cdk-turso.TursoDatabaseProps.property.provider">provider</a></code> | <code><a href="#cdk-turso.ITursoProvider">ITursoProvider</a></code> | *No description.* |
+| <code><a href="#cdk-turso.TursoDatabaseProps.property.adopt">adopt</a></code> | <code>boolean</code> | If true, the provider will adopt an existing Turso database when creation reports that the database already exists. |
 | <code><a href="#cdk-turso.TursoDatabaseProps.property.encryption">encryption</a></code> | <code><a href="#cdk-turso.TursoDatabaseEncryption">TursoDatabaseEncryption</a></code> | *No description.* |
+| <code><a href="#cdk-turso.TursoDatabaseProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Removal policy for the underlying custom resource. |
 | <code><a href="#cdk-turso.TursoDatabaseProps.property.seed">seed</a></code> | <code><a href="#cdk-turso.TursoDatabaseSeed">TursoDatabaseSeed</a></code> | *No description.* |
 | <code><a href="#cdk-turso.TursoDatabaseProps.property.sizeLimit">sizeLimit</a></code> | <code>string</code> | *No description.* |
 
@@ -654,6 +672,21 @@ public readonly provider: ITursoProvider;
 
 ---
 
+##### `adopt`<sup>Optional</sup> <a name="adopt" id="cdk-turso.TursoDatabaseProps.property.adopt"></a>
+
+```typescript
+public readonly adopt: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+If true, the provider will adopt an existing Turso database when creation reports that the database already exists.
+
+This flag is only used during Create requests.
+
+---
+
 ##### `encryption`<sup>Optional</sup> <a name="encryption" id="cdk-turso.TursoDatabaseProps.property.encryption"></a>
 
 ```typescript
@@ -661,6 +694,21 @@ public readonly encryption: TursoDatabaseEncryption;
 ```
 
 - *Type:* <a href="#cdk-turso.TursoDatabaseEncryption">TursoDatabaseEncryption</a>
+
+---
+
+##### `removalPolicy`<sup>Optional</sup> <a name="removalPolicy" id="cdk-turso.TursoDatabaseProps.property.removalPolicy"></a>
+
+```typescript
+public readonly removalPolicy: RemovalPolicy;
+```
+
+- *Type:* aws-cdk-lib.RemovalPolicy
+
+Removal policy for the underlying custom resource.
+
+Set to `RemovalPolicy.RETAIN` to keep the Turso database on stack
+deletion.
 
 ---
 
