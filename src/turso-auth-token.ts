@@ -1,4 +1,4 @@
-import { CustomResource, Stack } from "aws-cdk-lib"
+import { CustomResource, RemovalPolicy, Stack } from "aws-cdk-lib"
 import { Effect, PolicyStatement } from "aws-cdk-lib/aws-iam"
 import { Construct } from "constructs"
 import type { ITursoProvider } from "./turso-provider"
@@ -35,6 +35,13 @@ export interface TursoAuthTokenProps {
    * @default "full-access"
    */
   readonly authorization?: string
+
+  /**
+   * Removal policy for the underlying custom resource.
+   * Set to `RemovalPolicy.RETAIN` to keep the SSM parameter on stack
+   * deletion.
+   */
+  readonly removalPolicy?: RemovalPolicy
 }
 
 export class TursoAuthToken extends Construct {
@@ -90,11 +97,15 @@ export class TursoAuthToken extends Construct {
       resourceProps.Authorization = props.authorization
     }
 
-    new CustomResource(this, "TursoAuthToken", {
+    const cr = new CustomResource(this, "TursoAuthToken", {
       serviceToken: props.provider.serviceToken,
       resourceType: "Custom::TursoAuthToken",
       properties: resourceProps,
     })
+
+    if (props.removalPolicy !== undefined) {
+      cr.applyRemovalPolicy(props.removalPolicy)
+    }
 
     this.parameterName = props.parameterName
   }

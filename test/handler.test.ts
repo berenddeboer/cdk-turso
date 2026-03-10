@@ -106,6 +106,86 @@ describe("handler", () => {
       )
     })
 
+    test("create with adopt enabled adopts existing database", async () => {
+      const mockFetch = jest
+        .fn()
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 409,
+          text: async () => "database already exists",
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            database: {
+              DbId: "db-123",
+              Hostname: "db-123.db.turso.io",
+              Name: "test-db",
+            },
+          }),
+        })
+      global.fetch = mockFetch
+
+      const event: CloudFormationCustomResourceEvent = {
+        RequestType: "Create",
+        ResourceProperties: {
+          ServiceToken: "arn:aws:lambda:us-east-1:123456789012:function:test",
+          ResourceType: "Database",
+          DatabaseName: "test-db",
+          Group: "group1",
+          OrganizationSlug: "myorg",
+          Adopt: true,
+        },
+      }
+
+      const result = await handler(event)
+
+      expect(result.PhysicalResourceId).toBe("test-db")
+      expect(result.Data).toEqual({
+        DbId: "db-123",
+        Hostname: "db-123.db.turso.io",
+        Name: "test-db",
+      })
+
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        1,
+        "https://api.turso.tech/v1/organizations/myorg/databases",
+        expect.objectContaining({
+          method: "POST",
+        }),
+      )
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        2,
+        "https://api.turso.tech/v1/organizations/myorg/databases/test-db",
+        expect.objectContaining({
+          method: "GET",
+        }),
+      )
+    })
+
+    test("create with adopt enabled still throws for other errors", async () => {
+      const mockFetch = jest.fn().mockResolvedValue({
+        ok: false,
+        status: 500,
+        text: async () => "Internal Server Error",
+      })
+      global.fetch = mockFetch
+
+      const event: CloudFormationCustomResourceEvent = {
+        RequestType: "Create",
+        ResourceProperties: {
+          ServiceToken: "arn:aws:lambda:us-east-1:123456789012:function:test",
+          ResourceType: "Database",
+          DatabaseName: "test-db",
+          Group: "group1",
+          OrganizationSlug: "myorg",
+          Adopt: true,
+        },
+      }
+
+      await expect(handler(event)).rejects.toThrow("Failed to create database")
+    })
+
     test("delete calls correct URL and returns PhysicalResourceId", async () => {
       const mockFetch = jest.fn().mockResolvedValue({
         ok: true,
@@ -148,11 +228,13 @@ describe("handler", () => {
           DatabaseName: "test-db",
           Group: "group1",
           OrganizationSlug: "myorg",
+          Adopt: true,
         },
         OldResourceProperties: {
           DatabaseName: "test-db",
           Group: "group1",
           OrganizationSlug: "myorg",
+          Adopt: false,
         },
       }
 

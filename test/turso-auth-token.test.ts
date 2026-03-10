@@ -1,4 +1,4 @@
-import { Stack } from "aws-cdk-lib"
+import { RemovalPolicy, Stack } from "aws-cdk-lib"
 import { Match, Template } from "aws-cdk-lib/assertions"
 import { StringParameter } from "aws-cdk-lib/aws-ssm"
 import { TursoAuthToken, TursoProvider } from "../src"
@@ -144,5 +144,22 @@ describe("TursoAuthToken", () => {
     })
 
     expect(authToken.parameterName).toBe("/turso/db-token")
+  })
+
+  test("applies retain removal policy to custom resource", () => {
+    const { stack, provider } = createStack()
+    new TursoAuthToken(stack, "AuthToken", {
+      provider,
+      databaseName: "test-db",
+      organizationSlug: "myorg",
+      parameterName: "/turso/db-token",
+      removalPolicy: RemovalPolicy.RETAIN,
+    })
+
+    const template = Template.fromStack(stack)
+    template.hasResource("Custom::TursoAuthToken", {
+      DeletionPolicy: "Retain",
+      UpdateReplacePolicy: "Retain",
+    })
   })
 })

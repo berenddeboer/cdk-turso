@@ -1,4 +1,4 @@
-import { Stack } from "aws-cdk-lib"
+import { RemovalPolicy, Stack } from "aws-cdk-lib"
 import { Match, Template } from "aws-cdk-lib/assertions"
 import { StringParameter } from "aws-cdk-lib/aws-ssm"
 import { TursoDatabase, TursoProvider } from "../src"
@@ -124,6 +124,7 @@ describe("TursoDatabase", () => {
       group: "group1",
       organizationSlug: "myorg",
       sizeLimit: "256mb",
+      adopt: true,
       seed: {
         type: "schema",
         name: "migrations",
@@ -141,6 +142,7 @@ describe("TursoDatabase", () => {
       Group: "group1",
       OrganizationSlug: "myorg",
       SizeLimit: "256mb",
+      Adopt: true,
       Seed: {
         type: "schema",
         name: "migrations",
@@ -149,6 +151,23 @@ describe("TursoDatabase", () => {
         encryptionKey: "key-arn",
         encryptionCipher: "AES",
       },
+    })
+  })
+
+  test("applies retain removal policy to custom resource", () => {
+    const { stack, provider } = createStack()
+    new TursoDatabase(stack, "Database", {
+      provider,
+      databaseName: "test-db",
+      group: "group1",
+      organizationSlug: "myorg",
+      removalPolicy: RemovalPolicy.RETAIN,
+    })
+
+    const template = Template.fromStack(stack)
+    template.hasResource("Custom::TursoDatabase", {
+      DeletionPolicy: "Retain",
+      UpdateReplacePolicy: "Retain",
     })
   })
 
