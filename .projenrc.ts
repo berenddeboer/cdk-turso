@@ -24,6 +24,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
     "@aws-sdk/client-ssm",
     "esbuild",
     "@biomejs/biome",
+    "@types/node@^24",
     "husky",
     "exponential-backoff",
   ],

@@ -273,7 +273,7 @@
       },
       "steps": [
         {
-          "exec": "npx npm-check-updates@18 --upgrade --target=minor --peer --no-deprecated --dep=dev,peer,prod,optional --filter=@aws-sdk/client-ssm,@types/jest,@types/node,esbuild,exponential-backoff,husky,jest,jsii-diff,jsii-pacmak,projen,ts-jest,ts-node,typescript"
+          "exec": "npx npm-check-updates@20 --upgrade --target=minor --peer --no-deprecated --dep=dev,peer,prod,optional --filter=@aws-sdk/client-ssm,@types/jest,esbuild,exponential-backoff,husky,jest,jsii-diff,jsii-pacmak,projen,ts-jest,ts-node,typescript"
         },
         {
           "exec": "npm install"
