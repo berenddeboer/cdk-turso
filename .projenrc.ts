@@ -96,6 +96,20 @@ project.projectBuild.compileTask.exec(
   "esbuild src/handler/index.ts --bundle --platform=node --target=node24 --outfile=lib/handler/index.js --external:@aws-sdk/*",
 )
 
+const dependabot = project.github?.addDependabot()
+if (dependabot) {
+  dependabot.config.updates = [
+    {
+      "package-ecosystem": "github-actions",
+      directory: "/",
+      schedule: {
+        interval: github.DependabotScheduleInterval.WEEKLY,
+      },
+      allow: [{ "dependency-name": "anthropics/claude-code-action" }],
+    },
+  ]
+}
+
 const huskyDir = path.join(project.outdir, ".husky")
 if (!fs.existsSync(huskyDir)) {
   fs.mkdirSync(huskyDir, { recursive: true })

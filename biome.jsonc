@@ -15,6 +15,7 @@
       ".projenrc.ts",
       "projenrc/**",
       "!.gitattributes",
+      "!.github/dependabot.yml",
       "!.github/workflows/build.yml",
       "!.github/workflows/pull-request-lint.yml",
       "!.github/workflows/release.yml",
