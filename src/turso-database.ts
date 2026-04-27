@@ -36,6 +36,8 @@ export interface TursoDatabaseProps {
    * Removal policy for the underlying custom resource.
    * Set to `RemovalPolicy.RETAIN` to keep the Turso database on stack
    * deletion.
+   * Set to `RemovalPolicy.SNAPSHOT` to create a point-in-time Turso database
+   * snapshot before deleting the database.
    */
   readonly removalPolicy?: RemovalPolicy
 }
@@ -77,6 +79,9 @@ export class TursoDatabase extends Construct {
     if (props.encryption) {
       resourceProps.Encryption = props.encryption
     }
+    if (props.removalPolicy === RemovalPolicy.SNAPSHOT) {
+      resourceProps.SnapshotOnDelete = true
+    }
     if (props.adopt !== undefined) {
       resourceProps.Adopt = props.adopt
     }
@@ -87,7 +92,10 @@ export class TursoDatabase extends Construct {
       properties: resourceProps,
     })
 
-    if (props.removalPolicy !== undefined) {
+    if (
+      props.removalPolicy !== undefined &&
+      props.removalPolicy !== RemovalPolicy.SNAPSHOT
+    ) {
       cr.applyRemovalPolicy(props.removalPolicy)
     }
 

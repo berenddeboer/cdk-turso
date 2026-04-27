@@ -46,6 +46,23 @@ database.hostname;  // Database hostname (e.g., my-database-my-org.turso.io)
 database.databaseName;  // Database name
 ```
 
+Use `RemovalPolicy.SNAPSHOT` to create a point-in-time Turso database copy
+before the database is deleted:
+
+```typescript
+new TursoDatabase(stack, 'DatabaseWithFinalSnapshot', {
+  provider,
+  databaseName: 'my-database',
+  group: 'group-name',
+  organizationSlug: 'my-org',
+  removalPolicy: RemovalPolicy.SNAPSHOT,
+});
+```
+
+Snapshots are implemented by creating a new Turso database from the source
+database at delete time. Changing to `RemovalPolicy.SNAPSHOT` does not update
+the existing Turso database; it only affects a later delete operation.
+
 If you run a shared provider in another stack, import it by service token:
 
 ```typescript
@@ -115,7 +132,7 @@ Static method:
 | `seed` | `TursoDatabaseSeed` | No | Database seed configuration |
 | `encryption` | `TursoDatabaseEncryption` | No | Encryption configuration |
 | `adopt` | `boolean` | No | On create, adopt an existing database when create returns "already exists" |
-| `removalPolicy` | `RemovalPolicy` | No | Custom resource removal policy (for example `RemovalPolicy.RETAIN`) |
+| `removalPolicy` | `RemovalPolicy` | No | `RemovalPolicy.RETAIN` keeps the DB. `RemovalPolicy.SNAPSHOT` creates a point-in-time Turso DB copy before delete. |
 
 ### TursoDatabaseSeed
 
