@@ -709,6 +709,8 @@ Removal policy for the underlying custom resource.
 
 Set to `RemovalPolicy.RETAIN` to keep the Turso database on stack
 deletion.
+Set to `RemovalPolicy.SNAPSHOT` to create a point-in-time Turso database
+snapshot before deleting the database.
 
 ---
 

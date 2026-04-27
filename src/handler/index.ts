@@ -40,6 +40,13 @@ function isAlreadyExistsError(status: number, errorText: string): boolean {
   return status === 409 || /already exists|already been taken/i.test(errorText)
 }
 
+function isNotFoundError(status: number, errorText: string): boolean {
+  return (
+    status === 404 ||
+    (status === 400 && /not found|does not exist/i.test(errorText))
+  )
+}
+
 function isTrueValue(value: unknown): boolean {
   if (typeof value === "string") {
     return value.trim().toLowerCase() === "true"
@@ -77,6 +84,7 @@ interface DatabaseResourceProperties {
   Group: string
   OrganizationSlug: string
   Adopt?: boolean | string
+  SnapshotOnDelete?: boolean | string
   SizeLimit?: string
   Seed?: {
     type: string
@@ -87,6 +95,15 @@ interface DatabaseResourceProperties {
     encryptionKey: string
     encryptionCipher: string
   }
+}
+
+function formatSnapshotDate(date: Date): string {
+  return date.toISOString().replace(/\.\d{3}Z$/, "Z")
+}
+
+function formatSnapshotName(dbName: string, date: Date): string {
+  const suffix = `-snapshot-${formatSnapshotDate(date).replace(/\D/g, "")}`
+  return `${dbName.slice(0, 64 - suffix.length)}${suffix}`
 }
 
 interface DatabaseEvent {
@@ -233,6 +250,38 @@ async function handleDatabase(
     }
 
     const dbNameToDelete = encodeURIComponent(PhysicalResourceId)
+    if (isTrueValue(ResourceProperties.SnapshotOnDelete)) {
+      const snapshotDate = new Date()
+      const snapshotName = formatSnapshotName(PhysicalResourceId, snapshotDate)
+      const body: Record<string, unknown> = {
+        name: snapshotName,
+        group: ResourceProperties.Group,
+        seed: {
+          type: "database",
+          name: PhysicalResourceId,
+          timestamp: formatSnapshotDate(snapshotDate),
+        },
+      }
+      if (ResourceProperties.Encryption) {
+        body.encryption = ResourceProperties.Encryption
+      }
+
+      await fetchWithRetry(
+        `${baseUrl}/organizations/${orgSlug}/databases`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${apiToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        },
+        "Failed to create database snapshot",
+        false,
+        isNotFoundError,
+      )
+    }
+
     await fetchWithRetry(
       `${baseUrl}/organizations/${orgSlug}/databases/${dbNameToDelete}`,
       {

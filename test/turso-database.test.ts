@@ -171,6 +171,26 @@ describe("TursoDatabase", () => {
     })
   })
 
+  test("snapshot removal policy enables delete snapshot", () => {
+    const { stack, provider } = createStack()
+    new TursoDatabase(stack, "Database", {
+      provider,
+      databaseName: "test-db",
+      group: "group1",
+      organizationSlug: "myorg",
+      removalPolicy: RemovalPolicy.SNAPSHOT,
+    })
+
+    const template = Template.fromStack(stack)
+    template.hasResource("Custom::TursoDatabase", {
+      Properties: {
+        SnapshotOnDelete: true,
+      },
+      DeletionPolicy: "Delete",
+      UpdateReplacePolicy: "Delete",
+    })
+  })
+
   test("databaseName validation rejects invalid names", () => {
     const { stack, provider } = createStack()
     expect(() => {

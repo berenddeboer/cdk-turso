@@ -265,6 +265,95 @@ describe("handler", () => {
       )
     })
 
+    test("delete creates snapshot before deleting when enabled", async () => {
+      jest.useFakeTimers().setSystemTime(new Date("2026-04-27T12:34:56Z"))
+      const mockFetch = jest.fn().mockResolvedValue({
+        ok: true,
+      })
+      global.fetch = mockFetch
+
+      const event: CloudFormationCustomResourceEvent = {
+        RequestType: "Delete",
+        PhysicalResourceId: "test-db",
+        ResourceProperties: {
+          ServiceToken: "arn:aws:lambda:us-east-1:123456789012:function:test",
+          ResourceType: "Database",
+          DatabaseName: "test-db",
+          Group: "group1",
+          OrganizationSlug: "myorg",
+          SnapshotOnDelete: true,
+        },
+      }
+
+      const result = await handler(event)
+
+      expect(result.PhysicalResourceId).toBe("test-db")
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        1,
+        "https://api.turso.tech/v1/organizations/myorg/databases",
+        expect.objectContaining({
+          method: "POST",
+          body: JSON.stringify({
+            name: "test-db-snapshot-20260427123456",
+            group: "group1",
+            seed: {
+              type: "database",
+              name: "test-db",
+              timestamp: "2026-04-27T12:34:56Z",
+            },
+          }),
+        }),
+      )
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        2,
+        "https://api.turso.tech/v1/organizations/myorg/databases/test-db",
+        expect.objectContaining({
+          method: "DELETE",
+        }),
+      )
+
+      jest.useRealTimers()
+    })
+
+    test("delete tolerates missing source database when snapshot is enabled", async () => {
+      const mockFetch = jest
+        .fn()
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 404,
+          text: async () => "database not found",
+        })
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 404,
+        })
+      global.fetch = mockFetch
+
+      const event: CloudFormationCustomResourceEvent = {
+        RequestType: "Delete",
+        PhysicalResourceId: "test-db",
+        ResourceProperties: {
+          ServiceToken: "arn:aws:lambda:us-east-1:123456789012:function:test",
+          ResourceType: "Database",
+          DatabaseName: "test-db",
+          Group: "group1",
+          OrganizationSlug: "myorg",
+          SnapshotOnDelete: true,
+        },
+      }
+
+      const result = await handler(event)
+
+      expect(result.PhysicalResourceId).toBe("test-db")
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        2,
+        "https://api.turso.tech/v1/organizations/myorg/databases/test-db",
+        expect.objectContaining({
+          method: "DELETE",
+        }),
+      )
+    })
+
     test("update with same name is a no-op", async () => {
       const mockFetch = jest.fn()
       global.fetch = mockFetch
@@ -285,6 +374,7 @@ describe("handler", () => {
           Group: "group1",
           OrganizationSlug: "myorg",
           Adopt: false,
+          SnapshotOnDelete: true,
         },
       }
 
