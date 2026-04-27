@@ -5,7 +5,7 @@ import { awscdk, github, javascript, javascript as js } from "projen"
 const project = new awscdk.AwsCdkConstructLibrary({
   author: "Berend de Boer",
   authorAddress: "berend@pobox.com",
-  cdkVersion: "2.201.0",
+  cdkVersion: "2.224.0",
   constructsVersion: "10.3.0",
   defaultReleaseBranch: "main",
   jsiiVersion: "~5.9.0",
@@ -95,6 +95,20 @@ const project = new awscdk.AwsCdkConstructLibrary({
 project.projectBuild.compileTask.exec(
   "esbuild src/handler/index.ts --bundle --platform=node --target=node24 --outfile=lib/handler/index.js --external:@aws-sdk/*",
 )
+
+const dependabot = project.github?.addDependabot()
+if (dependabot) {
+  dependabot.config.updates = [
+    {
+      "package-ecosystem": "github-actions",
+      directory: "/",
+      schedule: {
+        interval: github.DependabotScheduleInterval.WEEKLY,
+      },
+      allow: [{ "dependency-name": "anthropics/claude-code-action" }],
+    },
+  ]
+}
 
 const huskyDir = path.join(project.outdir, ".husky")
 if (!fs.existsSync(huskyDir)) {
