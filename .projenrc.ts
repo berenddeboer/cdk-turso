@@ -8,7 +8,11 @@ const project = new awscdk.AwsCdkConstructLibrary({
   cdkVersion: "2.224.0",
   constructsVersion: "10.3.0",
   defaultReleaseBranch: "main",
+  description:
+    "AWS CDK constructs to create Turso Cloud databases and manage auth tokens.",
   jsiiVersion: "~5.9.0",
+  keywords: ["aws-cdk", "cdk", "constructs", "turso", "libsql"],
+  minMajorVersion: 1,
   name: "cdk-turso",
   packageManager: javascript.NodePackageManager.NPM,
   projenrcTs: true,
