@@ -1,5 +1,6 @@
 {
   "name": "cdk-turso",
+  "description": "AWS CDK constructs to create Turso Cloud databases and manage auth tokens.",
   "repository": {
     "type": "git",
     "url": "https://github.com/berenddeboer/cdk-turso.git"
@@ -61,7 +62,11 @@
     "constructs": "^10.3.0"
   },
   "keywords": [
-    "cdk"
+    "aws-cdk",
+    "cdk",
+    "constructs",
+    "libsql",
+    "turso"
   ],
   "devEngines": {
     "packageManager": {
