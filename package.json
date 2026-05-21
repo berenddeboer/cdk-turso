@@ -34,7 +34,7 @@
     "organization": false
   },
   "devDependencies": {
-    "@aws-sdk/client-ssm": "^3.1037.0",
+    "@aws-sdk/client-ssm": "^3.1044.0",
     "@biomejs/biome": "^2",
     "@types/jest": "^30.0.0",
     "@types/node": "^24",
@@ -47,11 +47,11 @@
     "jest": "^30.3.0",
     "jest-junit": "^16",
     "jsii": "~5.9.0",
-    "jsii-diff": "^1.128.0",
+    "jsii-diff": "^1.129.0",
     "jsii-docgen": "^10.5.0",
-    "jsii-pacmak": "^1.128.0",
+    "jsii-pacmak": "^1.129.0",
     "jsii-rosetta": "~5.9.0",
-    "projen": "^0.99.52",
+    "projen": "^0.99.53",
     "ts-jest": "^29.4.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
