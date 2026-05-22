@@ -84,6 +84,7 @@ interface DatabaseResourceProperties {
   Group: string
   OrganizationSlug: string
   Adopt?: boolean | string
+  UseTursoDb?: boolean | string
   SnapshotOnDelete?: boolean | string
   SizeLimit?: string
   Seed?: {
@@ -143,6 +144,9 @@ async function handleDatabase(
     }
     if (ResourceProperties.Encryption) {
       body.encryption = ResourceProperties.Encryption
+    }
+    if (ResourceProperties.UseTursoDb !== undefined) {
+      body.use_tursodb = isTrueValue(ResourceProperties.UseTursoDb)
     }
 
     const response = await fetchWithRetry(

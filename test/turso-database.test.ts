@@ -125,6 +125,7 @@ describe("TursoDatabase", () => {
       organizationSlug: "myorg",
       sizeLimit: "256mb",
       adopt: true,
+      useTursoDb: true,
       seed: {
         type: "schema",
         name: "migrations",
@@ -143,6 +144,7 @@ describe("TursoDatabase", () => {
       OrganizationSlug: "myorg",
       SizeLimit: "256mb",
       Adopt: true,
+      UseTursoDb: true,
       Seed: {
         type: "schema",
         name: "migrations",

@@ -23,6 +23,16 @@ export interface TursoDatabaseProps {
   readonly encryption?: TursoDatabaseEncryption
 
   /**
+   * If true, create the database with TursoDB enabled.
+   *
+   * This flag is only used during Create requests. Changing it does not affect
+   * existing databases; recreate the database to apply a new value.
+   *
+   * @default false
+   */
+  readonly useTursoDb?: boolean
+
+  /**
    * If true, the provider will adopt an existing Turso database when
    * creation reports that the database already exists.
    *
@@ -78,6 +88,9 @@ export class TursoDatabase extends Construct {
     }
     if (props.encryption) {
       resourceProps.Encryption = props.encryption
+    }
+    if (props.useTursoDb !== undefined) {
+      resourceProps.UseTursoDb = props.useTursoDb
     }
     if (props.removalPolicy === RemovalPolicy.SNAPSHOT) {
       resourceProps.SnapshotOnDelete = true

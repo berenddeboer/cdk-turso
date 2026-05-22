@@ -79,6 +79,7 @@ describe("handler", () => {
           DatabaseName: "test-db",
           Group: "group1",
           OrganizationSlug: "myorg",
+          UseTursoDb: true,
         },
       }
 
@@ -101,6 +102,7 @@ describe("handler", () => {
           body: JSON.stringify({
             name: "test-db",
             group: "group1",
+            use_tursodb: true,
           }),
         }),
       )
@@ -375,6 +377,35 @@ describe("handler", () => {
           OrganizationSlug: "myorg",
           Adopt: false,
           SnapshotOnDelete: true,
+        },
+      }
+
+      const result = await handler(event)
+
+      expect(result.PhysicalResourceId).toBe("test-db")
+      expect(mockFetch).not.toHaveBeenCalled()
+    })
+
+    test("update with same name ignores TursoDB flag changes", async () => {
+      const mockFetch = jest.fn()
+      global.fetch = mockFetch
+
+      const event: CloudFormationCustomResourceEvent = {
+        RequestType: "Update",
+        PhysicalResourceId: "test-db",
+        ResourceProperties: {
+          ServiceToken: "arn:aws:lambda:us-east-1:123456789012:function:test",
+          ResourceType: "Database",
+          DatabaseName: "test-db",
+          Group: "group1",
+          OrganizationSlug: "myorg",
+          UseTursoDb: true,
+        },
+        OldResourceProperties: {
+          DatabaseName: "test-db",
+          Group: "group1",
+          OrganizationSlug: "myorg",
+          UseTursoDb: false,
         },
       }
 
