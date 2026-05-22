@@ -629,6 +629,7 @@ const tursoDatabaseProps: TursoDatabaseProps = { ... }
 | <code><a href="#cdk-turso.TursoDatabaseProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Removal policy for the underlying custom resource. |
 | <code><a href="#cdk-turso.TursoDatabaseProps.property.seed">seed</a></code> | <code><a href="#cdk-turso.TursoDatabaseSeed">TursoDatabaseSeed</a></code> | *No description.* |
 | <code><a href="#cdk-turso.TursoDatabaseProps.property.sizeLimit">sizeLimit</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#cdk-turso.TursoDatabaseProps.property.useTursoDb">useTursoDb</a></code> | <code>boolean</code> | If true, create the database with TursoDB enabled. |
 
 ---
 
@@ -731,6 +732,22 @@ public readonly sizeLimit: string;
 ```
 
 - *Type:* string
+
+---
+
+##### `useTursoDb`<sup>Optional</sup> <a name="useTursoDb" id="cdk-turso.TursoDatabaseProps.property.useTursoDb"></a>
+
+```typescript
+public readonly useTursoDb: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+If true, create the database with TursoDB enabled.
+
+This flag is only used during Create requests. Changing it does not affect
+existing databases; recreate the database to apply a new value.
 
 ---
 
