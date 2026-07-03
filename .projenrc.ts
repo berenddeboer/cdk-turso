@@ -39,13 +39,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   npmAccess: javascript.NpmAccess.PUBLIC,
   npmProvenance: true,
   npmTrustedPublishing: true,
-  depsUpgradeOptions: {
-    workflowOptions: {
-      projenCredentials: github.GithubCredentials.fromPersonalAccessToken({
-        secret: "GITHUB_TOKEN",
-      }),
-    },
-  },
+  depsUpgrade: false,
   biomeOptions: {
     biomeConfig: {
       files: {
